@@ -1,0 +1,11 @@
+# Archivos temporales de Office
+~$*
+
+# Archivos del sistema operativo
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Archivos temporales
+*.tmp

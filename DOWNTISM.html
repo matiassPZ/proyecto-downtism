@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mi Proyecto Educativo</title>
+
+<style>
+/* =========================================================
+   ESTILOS GENERALES
+   ========================================================= */
+
+:root{
+    --verde1:#2ff028;
+    --verde-oscuro:#005f00;
+    --celeste:#dff4ff;
+    --amarillo:#ffd95a;
+    --verde:#7ed6a5;
+    --morado:#a98bea;
+    --texto:#29324a;
+    --blanco:#ffffff; 
+}
+
+*{
+    box-sizing:border-box;
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:"Trebuchet MS", Arial, sans-serif;
+    color:var(--texto);
+
+    /* Fondo con imagen. Guarda tu imagen como FondoPágina.jpg dentro de Imágenes.
+       Si usas otro nombre o carpeta, cambia la ruta de url(...).
+       Los degradados quedan como respaldo si la imagen no carga. */
+    background:
+        linear-gradient(rgba(30, 255, 0, 0.700), rgba(9, 1, 255, 0.700)),
+        url("Imágenes/Fondo de página web (sonic).jpg") center center / cover fixed no-repeat;
+}
+
+/* Decoración del fondo */
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:0.18;
+    background-size:45px 45px,70px 70px;
+    background-position:0 0,20px 20px;
+
+    z-index:-1;
+}
+
+img{
+    max-width:100%;
+    display:block;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+
+    background:rgb(171, 216, 22);
+    backdrop-filter:blur(10px);
+
+    box-shadow:0 15px 20px rgb(19, 58, 1);
+
+    border-bottom:4px solid #130056;
+}
+
+.navbar{
+    max-width:1250px;
+    margin:auto;
+
+    padding:12px 20px;
+
+    display:flex;
+    align-items:center;
+
+    gap:18px;
+}
+
+/* =========================================================
+   LOGO DEL PROYECTO
+   ========================================================= */
+
+.logo-proyecto{
+    width:100px;
+    height:75px;
+
+    object-fit:contain;
+
+    flex-shrink:0;
+}
+
+/* =========================================================
+   LOGO DEL COLEGIO
+   ========================================================= */
+
+.logo-colegio{
+    width:70px;
+    height:70px;
+
+    object-fit:contain;
+
+    flex-shrink:0;
+
+    margin-left:auto;
+}
+
+
+/* =========================================================
+   BOTONES DEL MENÚ
+   ========================================================= */
+
+.nav-buttons{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    flex:1;
+}
+
+.nav-btn{
+    border:0;
+
+    padding:12px 17px;
+
+    border-radius:25px;
+
+    font-weight:bold;
+    font-size:18px;
+
+    cursor:pointer;
+
+    color:#003931;
+
+    background:var(--verde1);
+
+    box-shadow:
+        0 5px 10px rgba(65, 102, 252, 0.8);
+
+    transition:0.35s;
+}
+
+.nav-btn:hover,
+.nav-btn.active{
+    transform:translateY(-5px) scale(1.03);
+
+    background:var(--verde-oscuro);
+    color: #6cffeb;
+}
+
+
+/* =========================================================
+   CONTENIDO PRINCIPAL
+   ========================================================= */
+
+main{
+    max-width:1150px;
+
+    margin:auto;
+
+    padding:35px 18px 70px;
+}
+
+.page{
+    display:none;
+
+    animation:entrada .45s ease;
+}
+
+.page.active{
+    display:block;
+}
+
+@keyframes entrada{
+    from{
+        opacity:0;
+        transform:translateY(12px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+
+/* =========================================================
+   PORTADA
+   ========================================================= */
+
+.hero{
+    text-align:center;
+
+    padding:65px 25px;
+
+    border-radius:35px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(84, 81, 251, 0.8),
+            rgba(246, 241, 75, 0.8),
+            rgba(248, 69, 69, 0.8)
+        );
+
+    box-shadow:0 10px 10px rgb(19, 58, 1);
+
+    border:4px solid #110061;
+
+    overflow:hidden;
+
+    position:relative;
+}
+
+.hero::after{
+    content:"★  ✦  ●  ♥  ✦  ★";
+
+    position:absolute;
+
+    font-size:38px;
+
+    opacity:.40;
+
+    letter-spacing:35px;
+
+    bottom:10px;
+
+    left:0;
+    right:0;
+}
+
+.hero h1{
+    font-size:clamp(35px,6vw,64px);
+
+    margin:0 0 15px;
+
+    color:var(--verde-oscuro);
+}
+
+.hero p{
+    max-width:1000px;
+
+    margin:0 auto;
+
+    line-height:1.7;
+
+    font-size:22px;
+
+    font-weight: Bold;
+}
+
+
+/* =========================================================
+   TÍTULOS
+   ========================================================= */
+
+.section-title{
+    text-align:center;
+
+    color:var(--verde-oscuro);
+
+    font-size:36px;
+
+    margin:10px 0;
+}
+
+.section-subtitle{
+    text-align:center;
+
+    max-width:850px;
+
+    margin:0 auto 30px;
+
+    line-height:1.7;
+
+    font-size:22px;
+
+    font-weight: Bold;
+}
+
+/* Un solo recuadro continuo para el título y su descripción */
+.section-heading-box{
+    width:fit-content;
+    max-width:90%;
+    margin:10px auto 30px;
+    padding:18px 25px;
+    text-align:center;
+    background:
+        linear-gradient(135deg,rgba(84, 81, 251, 0.8), rgba(246, 241, 75, 0.8), rgba(248, 69, 69, 0.8));
+    border:4px solid #110061;
+    border-radius:35px;
+    box-shadow:0 10px 10px rgb(19, 58, 1);
+}
+
+.section-heading-box .section-title{
+    margin:0 0 8px;
+}
+
+.section-heading-box .section-subtitle{
+    max-width:850px;
+    margin:0;
+}
+
+
+/* =========================================================
+   TARJETAS
+   ========================================================= */
+
+.card{
+    background:#90b5ff;
+
+    border-radius:25px;
+
+    padding:25px;
+
+    box-shadow:0 10px 10px rgb(19, 58, 1);
+
+    margin:20px 0;
+
+    font-size:18px;
+
+    border-left:8px solid rgb(18, 181, 12);
+}
+
+.card h3{
+    color:var(--verde-oscuro);
+
+    margin-top:0;
+
+    font-size:22px;
+}
+
+
+/* =========================================================
+   JUEGOS
+   ========================================================= */
+
+.games-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:25px;
+}
+
+.game-card{
+    background:#80fbab;
+
+    padding:18px;
+
+    border-radius:25px;
+
+    box-shadow:0 10px 10px rgb(19, 58, 1);
+
+    transition:0.35s;
+}
+
+.game-card:hover{
+    transform:translateY(-6px);
+}
+
+/* Centrar el tercer juego debajo de los dos primeros */
+.game-card:nth-child(3){
+    grid-column:1 / -1;
+    justify-self:center;
+    width:calc(50% - 12.5px);
+}
+
+.game-image{
+    width:100%;
+
+    height:210px;
+
+    object-fit:cover;
+
+    border-radius:18px;
+
+    background:#edf481;
+}
+
+.game-card h3{
+    color:var(--verde-oscuro);
+
+    margin:15px 0 8px;
+
+    font-size:22px;
+}
+
+.game-card p{
+    line-height:1.6;
+
+    font-size:18px;
+}
+
+.game-link{
+    display:inline-block;
+
+    text-decoration:none;
+
+    background:var(--verde1);
+
+    color:#02411c;
+
+    font-weight:bold;
+
+    padding:11px 18px;
+
+    border-radius:22px;
+
+    transition:0.35s;
+}
+
+.game-link:hover{
+    transform:scale(1.04);
+
+    background:#085206;
+
+    color: #6cffeb;
+}
+
+
+/* =========================================================
+   DIBUJOS
+   ========================================================= */
+
+.drawings-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:22px;
+}
+
+.drawing{
+    background:#9391ff;
+
+    padding:12px;
+
+    border-radius:22px;
+
+    box-shadow:0 10px 10px rgb(19, 58, 1);
+
+    text-align:center;
+
+    font-size:18px;
+}
+
+.drawing a{
+    display:block;
+
+    cursor:pointer;
+}
+
+.drawing img{
+    width:100%;
+
+    height:240px;
+
+    object-fit:cover;
+
+    border-radius:15px;
+
+    transition:.25s;
+
+    background:#ffffff;
+}
+
+.drawing img:hover{
+    transform:scale(1.025);
+}
+
+.drawing small{
+    display:block;
+
+    margin:10px 0 3px;
+
+    color:rgb(9, 72, 37);
+
+    font-weight: Bold;
+}
+
+
+/* =========================================================
+   INVESTIGACIÓN
+   ========================================================= */
+
+.research-cover{
+    background:
+        linear-gradient(
+            135deg,
+            rgba(84, 81, 251, 0.8),
+            rgba(246, 241, 75, 0.8),
+            rgba(248, 69, 69, 0.8)
+        );
+
+    padding:35px;
+
+    border-radius:30px;
+
+    box-shadow:0 10px 10px rgb(19, 58, 1);
+
+    margin-bottom:25px;
+
+    text-align:center;
+}
+
+.research-image{
+    width:100%;
+
+    max-height:330px;
+
+    object-fit:cover;
+
+    border-radius:25px;
+
+    margin:20px 0;
+
+    background:#ffffff;
+}
+
+.research{
+    background:#fff;
+
+    border-radius:25px;
+
+    padding:28px;
+
+    margin:22px 0;
+
+    box-shadow:var(--sombra);
+}
+
+.research h3{
+    color:#5a3ea8;
+
+    font-size:25px;
+}
+
+.research p,
+.research li{
+    line-height:1.85;
+}
+
+.research ul{
+    padding-left:25px;
+}
+
+.highlight{
+    padding:20px;
+
+    border-radius:18px;
+
+    background:#fff7c9;
+
+    border-left:7px solid var(--amarillo);
+}
+
+
+/* =========================================================
+   CREADORES
+   ========================================================= */
+
+.creators{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:30px;
+}
+
+.creator{
+    background:#fff;
+
+    padding:25px;
+
+    border-radius:30px;
+
+    box-shadow:var(--sombra);
+
+    text-align:center;
+}
+
+.creator:nth-child(1){
+    border-top:9px solid rgb(95, 255, 60);
+}
+
+.creator:nth-child(2){
+    border-top:9px solid rgb(46, 46, 255);
+}
+
+.creator-photo{
+    width:150px;
+
+    height:150px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    margin:0 auto 18px;
+
+    background:#f0f0f0;
+}
+
+.creator h3{
+    font-size:25px;
+
+    margin:8px;
+}
+
+.creator p{
+    line-height:1.7;
+}
+
+
+/* =========================================================
+   PIE DE PÁGINA
+   ========================================================= */
+
+footer{
+    text-align:center;
+
+    padding:10px 15px;
+
+    background:#025297;
+
+    border-top:4px solid #3a7d00;
+
+    color:rgb(251, 162, 243);
+
+    font-size:22px;
+
+    font-weight: Bold;
+}
+
+
+
+@media (max-width:700px){
+    .games-grid{
+        grid-template-columns:1fr;
+    }
+
+    .game-card:nth-child(3){
+        grid-column:auto;
+        width:100%;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     ENCABEZADO
+     ========================================================= -->
+
+<header>
+
+<nav class="navbar">
+
+
+<!-- =========================================================
+     LOGO DEL PROYECTO
+     ========================================================= -->
+
+<img
+    class="logo-proyecto"
+    src="Imágenes/Logo de proyecto.png"
+    alt="Logo del proyecto"
+>
+
+
+<!-- =========================================================
+     MENÚ
+     ========================================================= -->
+
+<div class="nav-buttons">
+
+    <button
+        class="nav-btn active"
+        onclick="mostrarPagina('inicio',this)"
+    >
+        Inicio
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="mostrarPagina('juegos',this)"
+    >
+        Juegos
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="mostrarPagina('dibujos',this)"
+    >
+        Dibujos
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="mostrarPagina('investigacion',this)"
+    >
+        Síndrome de Down y Autismo
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="mostrarPagina('creadores',this)"
+    >
+        Creadores
+    </button>
+
+</div>
+
+
+<!-- =========================================================
+     LOGO DEL COLEGIO
+     ========================================================= -->
+
+<img
+    class="logo-colegio"
+    src="Imágenes/Logo colegio.png"
+    alt="Logo del colegio"
+>
+
+
+</nav>
+
+</header>
+
+
+
+<main>
+
+
+<!-- =========================================================
+     INICIO
+     ========================================================= -->
+
+<section
+    id="inicio"
+    class="page active"
+>
+
+
+<div class="hero">
+
+    <h1>
+        🌈 DOWNTISM 🌈
+    </h1>
+
+    <p>
+        Bienvenidos a nuestra página educativa e interactiva.
+        Aquí encontrarás juegos, dibujos para imprimir y colorear e información
+        educativa sobre el síndrome de Down y el autismo.
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <h3>
+        ✨ ¿Qué encontrarás en esta página?
+    </h3>
+
+    <p>
+        Este proyecto fue creado para ofrecer un espacio alegre,
+        sencillo y educativo para niños, familias y docentes.
+        Puedes explorar los juegos, descargar dibujos para colorear
+        y conocer información que ayuda a comprender la diversidad,
+        promover el respeto y fomentar la inclusión.
+    </p>
+
+</div>
+
+
+<div class="card">
+
+    <h3>
+        💙 Nuestro objetivo
+    </h3>
+
+    <p>
+        Nuestro objetivo es combinar la tecnología, la creatividad y la
+        educación para crear una experiencia agradable. Queremos
+        que aprender sea divertido y que todas los niños puedan
+        sentirse representados, respetados y valorados.
+    </p>
+
+</div>
+
+
+</section>
+
+
+
+<!-- =========================================================
+     JUEGOS
+     ========================================================= -->
+
+<section
+    id="juegos"
+    class="page"
+>
+
+
+<div class="section-heading-box">
+
+<h2 class="section-title">
+    🎮 Juegos
+</h2>
+
+
+<p class="section-subtitle">
+
+    En esta sección encontrarás juegos educativos e interactivos.
+    Haz clic en el botón de cada juego para abrir el juego que quieras jugar.
+
+</p>
+
+</div>
+
+
+
+<div class="games-grid">
+
+
+<!-- JUEGO 1 -->
+
+<article class="game-card">
+
+    <img
+        class="game-image"
+        src="https://placehold.co/800x450/dff4ff/3549a8?text=IMAGEN+DEL+JUEGO+1"
+        alt="Imagen del Juego 1"
+    >
+
+    <h3>
+        🪄 Laberinto sin obstáculos
+    </h3>
+
+    <p>
+        Un juego relajante de seguir el camino hasta tu destino, con Sonic y sus amigos.
+    </p>
+
+    <a
+        class="game-link"
+        href="Juegos/(juego 1) Laberinto relajante.html"
+        target="_blank"
+    >
+        ▶ Jugar ahora
+    </a>
+
+</article>
+
+
+
+<!-- JUEGO 2 -->
+
+<article class="game-card">
+
+    <img
+        class="game-image"
+        src="https://placehold.co/800x450/ffe1ed/7d3155?text=IMAGEN+DEL+JUEGO+2"
+        alt="Imagen del Juego 2"
+    >
+
+    <h3>
+        🌟 Figuras coloridas
+    </h3>
+
+    <p>
+        Un juego donde elijes la figura y el color correcto, de paso aprendes con Sonic y sus amigos.
+    </p>
+
+    <a
+        class="game-link"
+        href="Juegos/(juego 2) Armando figuras coloridas.html"
+        target="_blank"
+    >
+        ▶ Jugar ahora
+    </a>
+
+</article>
+
+
+
+<!-- JUEGO 3 -->
+
+<article class="game-card">
+
+    <img
+        class="game-image"
+        src="https://placehold.co/800x450/e4ffed/27643d?text=IMAGEN+DEL+JUEGO+3"
+        alt="Imagen del Juego 3"
+    >
+
+    <h3>
+        🔢 Completa los números
+    </h3>
+
+    <p>
+        Un juego donde tienes que completar la línea de números, con Sonic y sus amigos.
+    </p>
+
+    <a
+        class="game-link"
+        href="Juegos\(juego 3) Completa la línea de números.html"
+        target="_blank"
+    >
+        ▶ Jugar ahora
+    </a>
+
+</article>
+
+</div>
+
+</section>
+
+
+
+<!-- =========================================================
+     DIBUJOS
+     ========================================================= -->
+
+<section
+    id="dibujos"
+    class="page"
+>
+
+
+<div class="section-heading-box">
+
+<h2 class="section-title">
+    🎨 Dibujos para colorear
+</h2>
+
+
+<p class="section-subtitle">
+
+    Haz clic sobre cualquier dibujo para abrirlo y descargarlo.
+    Después puedes imprimirlo para colorear en casa o en el colegio.
+
+</p>
+
+</div>
+
+
+
+<div class="drawings-grid">
+
+
+<!-- DIBUJO 1 -->
+
+<div class="drawing">
+
+    <a
+        href="Imágenes/Dibujo de Sonic the Hedgehog.jpg"
+        download="Dibujo-Sonic-the-Hedgehog.jpg"
+    >
+
+        <img
+            src="Imágenes/Dibujo de Sonic the Hedgehog.jpg"
+            alt="Dibujo de Sonic the Hedgehog"
+        >
+
+    </a>
+
+    <small>
+        Haz clic para descargar
+    </small>
+
+</div>
+
+
+
+<!-- DIBUJO 2 -->
+
+<div class="drawing">
+
+    <a
+        href="Imágenes/Dibujo de Tails the Fox.jpg"
+        download="Dibujo-Tails-the-Fox.jpg"
+    >
+
+        <img
+            src="Imágenes/Dibujo de Tails the Fox.jpg"
+            alt="Dibujo de Tails the Fox"
+        >
+
+    </a>
+
+    <small>
+        Haz clic para descargar
+    </small>
+
+</div>
+
+
+
+<!-- DIBUJO 3 -->
+
+<div class="drawing">
+
+    <a
+        href="Imágenes/Dibujo de Silver the Hedgehog.jpg"
+        download="Dibujo-Silver-the-Hedgehog.jpg"
+    >
+
+        <img
+            src="Imágenes/Dibujo de Silver the Hedgehog.jpg"
+            alt="Dibujo de Silver the Hedgehog"
+        >
+
+    </a>
+
+    <small>
+        Haz clic para descargar
+    </small>
+
+</div>
+
+
+
+<!-- DIBUJO 4 -->
+
+<div class="drawing">
+
+    <a
+        href="Imágenes/Dibujo de Cream the Rabbit.jpg"
+        download="Dibujo-Cream-the-Rabbit.png"
+    >
+
+        <img
+            src="Imágenes/Dibujo de Cream the Rabbit.jpg"
+            alt="Dibujo de Cream the Rabbit"
+        >
+
+    </a>
+
+    <small>
+        Haz clic para descargar
+    </small>
+
+</div>
+
+
+
+<!-- DIBUJO 5 -->
+
+<div class="drawing">
+
+    <a
+        href="Imágenes/Dibujo de Amy Rose.jpg"
+        download="Dibujo-Amy-Rose.png"
+    >
+
+        <img
+            src="Imágenes/Dibujo de Amy Rose.jpg"
+            alt="Dibujo de Amy Rose"
+        >
+
+    </a>
+
+    <small>
+        Haz clic para descargar
+    </small>
+
+</div>
+
+
+
+<!-- DIBUJO 6 -->
+
+<div class="drawing">
+
+    <a
+        href="Imágenes/Dibujo de Blaze the Cat.jpg"
+        download="Dibujo-Blaze-the-Cat.png"
+    >
+
+        <img
+            src="Imágenes/Dibujo de Blaze the Cat.jpg"
+            alt="Dibujo de Blaze the Cat"
+        >
+
+    </a>
+
+    <small>
+        Haz clic para descargar
+    </small>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<!-- =========================================================
+     INVESTIGACIÓN
+     ========================================================= -->
+
+<section
+    id="investigacion"
+    class="page"
+>
+
+
+<div class="research-cover">
+
+    <h2 class="section-title">
+        💙 Síndrome de Down y Autismo
+    </h2>
+
+    <p>
+        Información educativa para comprender, respetar e incluir
+        a las personas con síndrome de Down y autismo.
+    </p>
+
+
+    <!-- IMAGEN PRINCIPAL -->
+
+    <img
+        class="research-image"
+        src="https://placehold.co/1200x500/e7ddff/5a3ea8?text=IMAGEN+DE+INCLUSION"
+        alt="Imagen sobre inclusión"
+    >
+
+</div>
+
+
+
+<!-- INTRODUCCIÓN -->
+
+<article class="research">
+
+    <h3>
+        📘 Introducción
+    </h3>
+
+    <p>
+        La diversidad forma parte de todas las sociedades.
+        Cada persona tiene características, capacidades,
+        necesidades, intereses y maneras diferentes de aprender
+        y comunicarse. Comprender estas diferencias ayuda a
+        construir ambientes donde todas las personas puedan
+        participar.
+    </p>
+
+    <p>
+        El síndrome de Down y el trastorno del espectro autista
+        (TEA) son condiciones diferentes. No deben confundirse
+        entre sí y tampoco determinan por completo la personalidad,
+        capacidades o futuro de una persona. Cada individuo es
+        único y necesita apoyos de acuerdo con sus características
+        particulares.
+    </p>
+
+</article>
+
+
+
+<!-- SÍNDROME DE DOWN -->
+
+<article class="research">
+
+    <h3>
+        🧬 ¿Qué es el síndrome de Down?
+    </h3>
+
+    <p>
+        El síndrome de Down es una condición genética causada,
+        en la mayoría de los casos, por la presencia de una copia
+        adicional total o parcial del cromosoma 21. Por esta razón
+        también se conoce como trisomía 21.
+    </p>
+
+    <p>
+        Puede producir determinadas características físicas y un
+        perfil particular del desarrollo. Sin embargo, las personas
+        con síndrome de Down son muy diversas entre sí. Algunas
+        pueden necesitar apoyos importantes y otras pueden
+        desarrollar un alto grado de autonomía.
+    </p>
+
+</article>
+
+
+
+<!-- CARACTERÍSTICAS DOWN -->
+
+<article class="research">
+
+    <h3>
+        🧠 Características del síndrome de Down
+    </h3>
+
+    <ul>
+
+        <li>
+            Puede existir un ritmo de aprendizaje diferente.
+        </li>
+
+        <li>
+            El desarrollo del lenguaje puede requerir más tiempo
+            y apoyo.
+        </li>
+
+        <li>
+            Pueden presentarse características físicas asociadas
+            a la condición.
+        </li>
+
+        <li>
+            Las habilidades sociales pueden ser una fortaleza,
+            aunque cada persona es diferente.
+        </li>
+
+        <li>
+            La estimulación temprana puede favorecer el desarrollo
+            de distintas habilidades.
+        </li>
+
+        <li>
+            La educación inclusiva permite participar junto a
+            otros estudiantes.
+        </li>
+
+        <li>
+            Las necesidades de salud deben ser evaluadas
+            individualmente por profesionales.
+        </li>
+
+    </ul>
+
+</article>
+
+
+
+<!-- EDUCACIÓN DOWN -->
+
+<article class="research">
+
+    <h3>
+        🏫 Educación e inclusión en el síndrome de Down
+    </h3>
+
+    <p>
+        La educación inclusiva busca que los estudiantes puedan
+        aprender y participar en ambientes compartidos, realizando
+        los ajustes y proporcionando los apoyos necesarios.
+        Las actividades pueden adaptarse utilizando instrucciones
+        claras, materiales visuales, repetición, ejemplos concretos
+        y tiempos adecuados.
+    </p>
+
+    <p>
+        Es importante evitar la sobreprotección. Enseñar habilidades
+        de autonomía, comunicación, toma de decisiones y participación
+        favorece que cada estudiante pueda desarrollar su potencial.
+    </p>
+
+</article>
+
+
+
+<!-- AUTISMO -->
+
+<article class="research">
+
+    <h3>
+        🧩 ¿Qué es el autismo?
+    </h3>
+
+    <p>
+        El trastorno del espectro autista (TEA) es una condición
+        del neurodesarrollo. Se caracteriza por diferencias
+        persistentes en la comunicación e interacción social y
+        por patrones de comportamiento, intereses o actividades
+        restringidos o repetitivos.
+    </p>
+
+    <p>
+        Se denomina “espectro” porque las características y
+        necesidades pueden variar ampliamente de una persona
+        a otra.
+    </p>
+
+    <p>
+        El autismo no significa que todas las personas tengan las
+        mismas capacidades o dificultades. Algunas personas pueden
+        comunicarse principalmente mediante el lenguaje oral,
+        mientras que otras pueden utilizar sistemas alternativos
+        o aumentativos de comunicación.
+    </p>
+
+</article>
+
+
+
+<!-- CARACTERÍSTICAS AUTISMO -->
+
+<article class="research">
+
+    <h3>
+        🔎 Características que pueden aparecer en el autismo
+    </h3>
+
+    <ul>
+
+        <li>
+            Diferencias en la comunicación verbal y no verbal.
+        </li>
+
+        <li>
+            Diferencias en la interacción social y comprensión
+            de determinadas situaciones sociales.
+        </li>
+
+        <li>
+            Intereses muy específicos o intensos.
+        </li>
+
+        <li>
+            Preferencia por rutinas o dificultad ante cambios
+            inesperados.
+        </li>
+
+        <li>
+            Movimientos o comportamientos repetitivos en algunas
+            personas.
+        </li>
+
+        <li>
+            Procesamiento sensorial diferente: sonidos, luces,
+            texturas, olores o movimientos pueden percibirse de
+            manera distinta.
+        </li>
+
+        <li>
+            Fortalezas particulares en áreas como memoria,
+            atención a detalles, razonamiento o intereses
+            específicos, aunque esto varía mucho.
+        </li>
+
+    </ul>
+
+</article>
+
+
+
+<!-- APOYO AUTISMO -->
+
+<article class="research">
+
+    <h3>
+        🌈 Apoyo y educación para personas autistas
+    </h3>
+
+    <p>
+        Los apoyos deben ser individualizados. Algunas estrategias
+        educativas pueden incluir horarios visuales, anticipación
+        de cambios, instrucciones breves, ambientes estructurados
+        y actividades relacionadas con los intereses de la persona.
+    </p>
+
+    <p>
+        También es importante respetar las formas de comunicación
+        de cada individuo. La comunicación no debe entenderse
+        únicamente como hablar: gestos, imágenes, escritura,
+        dispositivos y otros sistemas pueden ser formas válidas
+        de comunicación.
+    </p>
+
+</article>
+
+
+
+<!-- DIFERENCIAS -->
+
+<article class="research">
+
+    <h3>
+        🤝 Diferencias y semejanzas
+    </h3>
+
+    <p>
+        El síndrome de Down y el autismo son condiciones diferentes.
+        El primero tiene una causa genética relacionada con el
+        cromosoma 21, mientras que el autismo es una condición del
+        neurodesarrollo con múltiples factores asociados.
+    </p>
+
+    <p>
+        Una persona puede tener síndrome de Down, autismo, ambos
+        o ninguno.
+    </p>
+
+
+    <div class="highlight">
+
+        <strong>
+            Lo más importante:
+        </strong>
+
+        no debemos definir a una persona únicamente por un
+        diagnóstico. Las personas tienen gustos, emociones,
+        talentos, necesidades, familias, sueños y objetivos propios.
+
+    </div>
+
+</article>
+
+
+
+<!-- INCLUSIÓN -->
+
+<article class="research">
+
+    <h3>
+        ❤️ Inclusión y respeto
+    </h3>
+
+    <p>
+        La inclusión significa crear condiciones para que todas
+        las personas puedan participar. Esto implica eliminar
+        barreras, adaptar actividades cuando sea necesario y
+        promover relaciones basadas en el respeto.
+    </p>
+
+    <p>
+        En el colegio, algunas acciones sencillas pueden marcar
+        una gran diferencia: utilizar lenguaje respetuoso,
+        escuchar a la persona, ofrecer ayuda sin imponerla,
+        permitir diferentes formas de participación, evitar
+        burlas y enseñar a los demás estudiantes que la diversidad
+        es parte natural de la vida.
+    </p>
+
+</article>
+
+
+
+<!-- FAMILIAS -->
+
+<article class="research">
+
+    <h3>
+        👨‍👩‍👧 Papel de las familias
+    </h3>
+
+    <p>
+        Las familias conocen de manera cercana las necesidades
+        y fortalezas de sus hijos. La colaboración entre familia,
+        escuela y profesionales puede ayudar a establecer objetivos
+        realistas y estrategias coherentes.
+    </p>
+
+    <p>
+        Es recomendable buscar información en fuentes confiables
+        y acudir a profesionales cualificados cuando existan
+        preguntas relacionadas con el desarrollo, la salud,
+        la comunicación o el aprendizaje.
+    </p>
+
+</article>
+
+
+
+<!-- CONCLUSIÓN -->
+
+<article class="research">
+
+    <h3>
+        🌟 Conclusión
+    </h3>
+
+    <p>
+        Aprender sobre el síndrome de Down y el autismo permite
+        superar prejuicios y comprender que no existe una única
+        manera de aprender, comunicarse o relacionarse.
+        La inclusión se construye mediante respeto,
+        accesibilidad, oportunidades y apoyos adecuados.
+    </p>
+
+    <p>
+        Una sociedad inclusiva no busca que todas las personas
+        sean iguales; busca que todas tengan oportunidades para
+        participar, aprender, expresarse y desarrollar sus
+        capacidades.
+    </p>
+
+</article>
+
+
+</section>
+
+
+
+<!-- =========================================================
+     CREADORES
+     ========================================================= -->
+
+<section
+    id="creadores"
+    class="page"
+>
+
+
+<div class="section-heading-box">
+
+<h2 class="section-title">
+    Creadores
+</h2>
+
+
+<p class="section-subtitle">
+
+    Los creadores de este gran proyecto son:
+
+</p>
+
+</div>
+
+
+
+<div class="creators">
+
+
+<!-- CREADOR 1 -->
+
+<article class="creator">
+
+    <img
+        class="creator-photo"
+        src="Imágenes\Wilfredo.jpg"
+        alt="Foto del creador 1"
+    >
+
+    <h3>
+        Wilfredo Daniel Delgado Sanabria
+    </h3>
+
+    <p>
+        <strong>Curso:</strong>
+        6to de Secundaria
+    </p>
+
+    <p>
+        Estudiante encargado de participar en el diseño creativo,
+        desarrollo y presentación de este proyecto educativo.
+    </p>
+
+</article>
+
+
+
+<!-- CREADOR 2 -->
+
+<article class="creator">
+
+    <img
+        class="creator-photo"
+        src="Imágenes\Junior.jpg"
+        alt="Foto del creador 2"
+    >
+
+    <h3>
+        Junior Felipe Molina Zurita
+    </h3>
+
+    <p>
+        <strong>Curso:</strong>
+        6to de Secundaria
+    </p>
+
+    <p>
+        Estudiante encargado de apoyar en la programación,
+        contenido, organización y revisión del proyecto.
+    </p>
+
+</article>
+
+
+</div>
+
+
+
+<div class="card">
+
+    <h3>
+        💡 Sobre nuestro proyecto
+    </h3>
+
+    <p>
+        Este proyecto representa el trabajo colaborativo de sus
+        creadores. La finalidad es utilizar herramientas digitales
+        para presentar contenidos educativos de una manera visual,
+        interactiva y accesible.
+    </p>
+
+</div>
+
+
+</section>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     PIE DE PÁGINA
+     ========================================================= -->
+
+<footer>
+
+    <p>
+        🌈 Mi Proyecto Educativo ·
+        Hecho con creatividad, respeto e inclusión 💙
+    </p>
+
+</footer>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script>
+
+/* =========================================================
+   FUNCIÓN PARA CAMBIAR DE PÁGINA
+   ========================================================= */
+
+function mostrarPagina(id, boton){
+
+    /* Ocultar todas las páginas */
+
+    document.querySelectorAll(".page").forEach(
+        function(pagina){
+
+            pagina.classList.remove("active");
+
+        }
+    );
+
+
+    /* Mostrar la página seleccionada */
+
+    document.getElementById(id).classList.add("active");
+
+
+    /* Quitar selección de todos los botones */
+
+    document.querySelectorAll(".nav-btn").forEach(
+        function(btn){
+
+            btn.classList.remove("active");
+
+        }
+    );
+
+
+    /* Activar el botón seleccionado */
+
+    boton.classList.add("active");
+
+
+    /* Guardar la página actual en el navegador */
+
+    localStorage.setItem("paginaActual", id);
+
+
+    /* Volver arriba */
+
+    window.scrollTo({
+
+        top:0,
+
+        behavior:"smooth"
+
+    });
+
+}
+
+
+/* =========================================================
+   RECUPERAR LA PÁGINA DESPUÉS DE ACTUALIZAR
+   ========================================================= */
+
+window.addEventListener("DOMContentLoaded", function(){
+
+    /* Obtener del navegador la última página visitada */
+
+    const paginaGuardada = localStorage.getItem("paginaActual");
+
+
+    /* Si existe una página guardada, mostrarla */
+
+    if(paginaGuardada){
+
+        const pagina = document.getElementById(paginaGuardada);
+
+        const boton = document.querySelector(
+            '.nav-btn[onclick*="' + paginaGuardada + '"]'
+        );
+
+
+        /* Comprobar que la página y su botón existen */
+
+        if(pagina && boton){
+
+            mostrarPagina(paginaGuardada, boton);
+
+        }
+
+    }
+
+});
+
+</script>
+
+
+</body>
+</html>

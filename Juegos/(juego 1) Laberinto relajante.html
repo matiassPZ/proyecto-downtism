@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Laberinto Sensorial de Caminos Mágicos</title>
+<style>
+/* ===== DISEÑO GENERAL ===== */
+:root{
+    --azul:#4f7cff;
+    --azul2:#143dd3;
+    --celeste:#e1f7ff;
+    --verde2:#76fe61;
+    --rosa:#ffb4d3;
+    --rojo:#ff4b45;
+    --verde:#8ee3ad;
+    --texto:#112713;
+}
+*{box-sizing:border-box;}
+body{
+    margin:0;
+    min-width:1100px;
+    font-family:"Trebuchet MS",Arial,sans-serif;
+    color:var(--texto);
+    background:
+        radial-gradient(circle at 8% 12%,#fdc64f 0 55px,transparent 56px),
+        radial-gradient(circle at 92% 15%,#ff92d9 0 65px,transparent 66px),
+        linear-gradient(135deg,#46cef7,#eff552 50%,#52f28f);
+}
+.contenedor{
+    width:1120px;
+    margin:22px auto;
+    padding:25px 30px 30px;
+    background:rgb(221,189,251);
+    border:5px solid rgb(49,195,0);
+    border-radius:32px;
+    box-shadow:0 15px 40px rgba(50,70,120,.18);
+}
+.encabezado{text-align:center;}
+.encabezado h1{
+    margin:0;
+    color:var(--azul2);
+    font-size:40px;
+}
+.encabezado p{
+    max-width:900px;
+    margin:8px auto 18px;
+    font-size:17px;
+    line-height:1.5;
+}
+.controles{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+}
+.dato,.control{
+    border:0;
+    padding:10px 15px;
+    border-radius:20px;
+    font-weight:bold;
+}
+.dato{background:var(--celeste);}
+.dato:nth-child(2){background:#fff4b8;}
+.dato:nth-child(3){background:#ffe2ee;}
+.control{
+    color:white;
+    background:var(--rojo);
+    cursor:pointer;
+}
+.control:hover{transform:translateY(-2px);}
+.zona-juego{
+    position:relative;
+    width:100%;
+    height:620px;
+    overflow:hidden;
+    border-radius:30px;
+    border:4px solid #21f082;
+    background:linear-gradient(145deg,#f2eaae,#aff9fe 55%,#f2b0d5);
+}
+#canvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    cursor:crosshair;
+}
+.etiqueta{
+    position:absolute;
+    z-index:5;
+    pointer-events:none;
+    padding:8px 14px;
+    border-radius:18px;
+    background:rgb(253,203,122);
+    box-shadow:0 6px 18px rgba(50,70,120,.14);
+    font-weight:bold;
+}
+#etiqueta-inicio{left:22px;top:18px;}
+#etiqueta-meta{right:22px;bottom:18px;}
+.objeto{
+    position:absolute;
+    z-index:6;
+    width:54px;
+    height:54px;
+    object-fit:contain;
+    object-position:center;
+    border-radius:50%;
+    overflow:hidden;
+    box-sizing:border-box;
+    border:5px solid white;
+    background:transparent;
+    pointer-events:none;
+    filter:drop-shadow(0 3px 3px rgba(6,54,199,.28));
+}
+#personaje{width:54px;height:54px;}
+#meta{width:54px;height:54px;}
+.instruccion{
+    position:absolute;
+    z-index:7;
+    left:50%;
+    top:15px;
+    transform:translateX(-50%);
+    background:rgba(255,255,255,.94);
+    padding:10px 20px;
+    border-radius:22px;
+    box-shadow:0 6px 18px rgba(50,70,120,.12);
+    font-weight:bold;
+    text-align:center;
+    pointer-events:none;
+}
+/* ===== MENSAJE DE BIENVENIDA ===== */
+.modal-bienvenida{
+    display:flex;
+    position:absolute;
+    z-index:30;
+    inset:0;
+    background:rgba(255,255,255,.88);
+    justify-content:center;
+    align-items:center;
+}
+.modal-bienvenida.oculto{display:none;}
+.modal{
+    display:none;
+    position:absolute;
+    z-index:20;
+    inset:0;
+    background:rgba(255,255,255,.88);
+    justify-content:center;
+    align-items:center;
+}
+.modal.visible{display:flex;}
+.tarjeta{
+    width:620px;
+    padding:30px;
+    text-align:center;
+    border-radius:32px;
+    background:linear-gradient(135deg,#87f665,#83f99c,#e0fb6a);
+    box-shadow:0 15px 40px rgba(9,255,1,.601);
+}
+.tarjeta h2{
+    margin:0 0 10px;
+    color:var(--azul2);
+    font-size:34px;
+}
+.tarjeta p{font-size:19px;line-height:1.6;}
+.boton-jugar{
+    border:0;
+    padding:14px 25px;
+    border-radius:25px;
+    background:var(--azul);
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+}
+.ayuda{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:14px;
+    margin-top:18px;
+}
+.ayuda-card{
+    padding:15px;
+    border-radius:22px;
+    background:#f0977c;
+    border:3px solid #039fb3;
+    line-height:1.5;
+}
+.ayuda-card:nth-child(2){background:#52fb9b;}
+.ayuda-card:nth-child(3){background:#f07bfb;}
+.pie{
+    text-align:center;
+    margin-top:18px;
+    color:#036c0c;
+    font-size:15px;
+}
+</style>
+</head>
+<body>
+
+<div class="contenedor">
+<header class="encabezado">
+    <h1>🪄 Laberinto sin obstáculos</h1>
+    <p>
+        Sigue el camino con calma hasta llegar a la meta.
+        No hay reloj, vidas ni sonidos de error. Si sales del camino,
+        puedes volver a intentarlo tranquilamente.
+    </p>
+</header>
+
+<div class="controles">
+    <div class="dato">⭐ Completados: <span id="completados">0</span></div>
+    <div class="dato">💙 Estado: <span id="estado">Listo</span></div>
+    <button class="control" onclick="NuevoNivel()">✨ Nuevo camino</button>
+    <button class="control" onclick="CambiarEfecto()">✨ Efecto: <span id="efectoTexto">ESTRELLAS</span></button>
+</div>
+
+<div class="zona-juego">
+
+<!-- Imagen decorativa del fondo. -->
+<img id="fondo-juego"
+     class="fondo-personalizado"
+     src="../Imágenes/FondoLaberinto.png"
+     alt="Fondo decorativo del laberinto"
+     onerror="this.style.display='none';">
+
+<!-- La música permanece apagada hasta pulsar INICIAR JUEGO. -->
+<audio id="musicaFondo" preload="auto"></audio>
+
+<!-- Sonido opcional al completar el camino. -->
+<audio id="sonidoCompletado"></audio>
+
+<canvas id="canvas" width="1120" height="620"></canvas>
+
+<div id="etiqueta-inicio" class="etiqueta">🚀 INICIO</div>
+<div id="etiqueta-meta" class="etiqueta">🏁 META</div>
+
+<img id="personaje" class="objeto" src="" alt="Personaje">
+<img id="meta" class="objeto" src="" alt="Meta">
+
+<div class="instruccion" id="instruccion">
+    🖱️ Mantén presionado el botón izquierdo y sigue el camino.
+</div>
+
+<!-- La pantalla inicial permite activar la música mediante un clic. -->
+<div id="bienvenida" class="modal-bienvenida">
+    <div class="tarjeta">
+        <h2>🌈 ¡Bienvenido a Caminos Mágicos! 🌈</h2>
+        <p>🦔 Prepárate para ayudar a tu personaje a llegar hasta la meta.</p>
+        <p>🎵 Presiona el botón para comenzar y activar la música de fondo.</p>
+        <button class="boton-jugar" onclick="IniciarJuego()">🚀 INICIAR JUEGO</button>
+    </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="tarjeta">
+        <h2>🎉 ¡LO LOGRASTE! 🎉</h2>
+        <p id="mensajeFinal"></p>
+        <p>🌟 ¡Excelente trabajo! Disfruta la fiesta de estrellas y burbujas.</p>
+        <button class="boton-jugar" onclick="NuevoNivel()">🚀 SIGUIENTE CAMINO</button>
+    </div>
+</div>
+</div>
+
+<div class="ayuda">
+    <div class="ayuda-card">
+        <strong>🧠 Pensar y planificar</strong><br>
+        Observa el recorrido y decide por dónde avanzar.
+    </div>
+    <div class="ayuda-card">
+        <strong>👀 Coordinación</strong><br>
+        Sigue el camino amplio con movimientos suaves y controlados.
+    </div>
+    <div class="ayuda-card">
+        <strong>💙 Sin presión</strong><br>
+        Salir del camino no es perder. Puedes intentarlo otra vez.
+    </div>
+</div>
+
+<div class="pie">🌈 Cada persona aprende de una manera y a su propio ritmo.</div>
+</div>
+
+<script>
+/* ===== JAVASCRIPT: DATOS DEL JUEGO ===== */
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+/* Variables que guardan el estado del juego. */
+let completados=0;
+let arrastrando=false;
+let efectosActivos=true;
+let tipoEfecto=0;
+let ultimoPunto=null;
+let tramoActual=-1;
+let particulas=[];
+
+/* ===== LISTA DE CANCIONES =====
+   Las canciones se reproducen solamente después de pulsar
+   INICIAR JUEGO. Ajusta las rutas si tus carpetas son distintas.
+*/
+const canciones=[
+    {archivo:"../Música/Dreams Of An Absolution (relax).mp3",nombre:"Dreams Of An Absolution (relax)"},
+    {archivo:"../Música/Green Hill Zone (relax).mp3",nombre:"Green Hill Zone (relax)"},
+    {archivo:"../Música/Friends (relax).mp3",nombre:"Friends (relax)"},
+    {archivo:"../Música/Reach For The Stars (relax).mp3",nombre:"Reach For The Stars (relax)"},
+    {archivo:"../Música/Fist Bump (relax).mp3",nombre:"Fist Bump (relax)"},
+    {archivo:"../Música/Chao Garden (relax).mp3",nombre:"Chao Garden (relax)"},
+    {archivo:"../Música/Escape From The City (relax).mp3",nombre:"Escape From The City (relax)"},
+    {archivo:"../Música/Open Your Heart (relax).mp3",nombre:"Open Your Heart (relax)"},
+    {archivo:"../Música/Fishing Vibes (relax).mp3",nombre:"Fishing Vibes (relax)"}
+];
+
+let ultimaCancion=-1;
+
+/* ===== PERSONAJES Y METAS ===== */
+const aventuras=[
+    {personaje:"../Imágenes/Cabeza de Sonic.png",meta:"../Imágenes/Chilidog.png",nombre:"Sonic y el Chilidog"},
+    {personaje:"../Imágenes/Cabeza de Tails.png",meta:"../Imágenes/Llave inglesa.png",nombre:"Tails y su Avión"},
+    {personaje:"../Imágenes/knuckles.png",meta:"../Imágenes/esmeralda.png",nombre:"Knuckles y la Esmeralda"},
+    {personaje:"../Imágenes/amy.png",meta:"../Imágenes/corazon.png",nombre:"Amy y el Corazón"},
+    {personaje:"../Imágenes/shadow.png",meta:"../Imágenes/caos.png",nombre:"Shadow y su Objetivo"},
+    {personaje:"../Imágenes/silver.png",meta:"../Imágenes/estrella.png",nombre:"Silver y la Estrella"},
+    {personaje:"../Imágenes/cream.png",meta:"../Imágenes/flor.png",nombre:"Cream y la Flor"},
+    {personaje:"../Imágenes/blaze.png",meta:"../Imágenes/sol.png",nombre:"Blaze y el Sol"}
+];
+let ultimaAventura=-1;
+
+/* Tipos de celebración disponibles. */
+const tiposEfecto=["ESTRELLAS","BURBUJAS","CORAZONES","CONFETI","ARCOÍRIS"];
+
+/* ===== CAMINOS DEL JUEGO ===== */
+const caminos=[
+{
+    nombre:"Camino del Anillo",
+    puntos:[{x:85,y:95},{x:300,y:95},{x:300,y:300},{x:170,y:300},{x:170,y:500},{x:420,y:500},{x:420,y:330},{x:650,y:330},{x:650,y:120},{x:900,y:120},{x:900,y:300},{x:1030,y:300},{x:1030,y:520}]
+},
+{
+    nombre:"Camino Zigzag",
+    puntos:[{x:85,y:95},{x:250,y:95},{x:250,y:210},{x:430,y:210},{x:430,y:100},{x:600,y:100},{x:600,y:300},{x:780,y:300},{x:780,y:180},{x:930,y:180},{x:930,y:430},{x:1030,y:430}]
+},
+{
+    nombre:"Camino de las Escaleras",
+    puntos:[{x:85,y:95},{x:300,y:95},{x:300,y:210},{x:450,y:210},{x:450,y:330},{x:600,y:330},{x:600,y:450},{x:780,y:450},{x:780,y:300},{x:900,y:300},{x:900,y:500},{x:1030,y:500}]
+},
+{
+    nombre:"Camino Serpiente",
+    puntos:[{x:85,y:95},{x:240,y:95},{x:240,y:220},{x:450,y:220},{x:450,y:100},{x:700,y:100},{x:700,y:250},{x:520,y:250},{x:520,y:400},{x:780,y:400},{x:780,y:520},{x:1030,y:520}]
+},
+{
+    nombre:"Camino de la Curva",
+    puntos:[{x:85,y:95},{x:330,y:95},{x:330,y:180},{x:200,y:180},{x:200,y:350},{x:400,y:350},{x:400,y:500},{x:650,y:500},{x:650,y:350},{x:850,y:350},{x:850,y:500},{x:1030,y:500}]
+},
+{
+    nombre:"Camino de las Torres",
+    puntos:[{x:85,y:95},{x:220,y:95},{x:220,y:400},{x:380,y:400},{x:380,y:180},{x:550,y:180},{x:550,y:450},{x:720,y:450},{x:720,y:150},{x:900,y:150},{x:900,y:500},{x:1030,y:500}]
+},
+{
+    nombre:"Camino Estrella",
+    puntos:[{x:85,y:95},{x:260,y:95},{x:260,y:250},{x:400,y:250},{x:400,y:120},{x:560,y:120},{x:560,y:300},{x:750,y:300},{x:750,y:450},{x:900,y:450},{x:900,y:300},{x:1030,y:300}]
+},
+{
+    nombre:"Camino del Puente",
+    puntos:[{x:85,y:95},{x:350,y:95},{x:350,y:250},{x:500,y:250},{x:500,y:400},{x:700,y:400},{x:700,y:180},{x:850,y:180},{x:850,y:350},{x:1030,y:350},{x:1030,y:520}]
+},
+{
+    nombre:"Camino de la Montaña",
+    puntos:[{x:85,y:95},{x:200,y:95},{x:200,y:300},{x:350,y:300},{x:350,y:150},{x:500,y:150},{x:500,y:350},{x:680,y:350},{x:680,y:180},{x:850,y:180},{x:850,y:500},{x:1030,y:500}]
+},
+{
+    nombre:"Camino de los Cuadros",
+    puntos:[{x:85,y:95},{x:300,y:95},{x:300,y:230},{x:150,y:230},{x:150,y:420},{x:400,y:420},{x:400,y:250},{x:600,y:250},{x:600,y:470},{x:800,y:470},{x:800,y:300},{x:1030,y:300}]
+},
+{
+    nombre:"Camino Relámpago",
+    puntos:[{x:85,y:95},{x:230,y:95},{x:230,y:180},{x:400,y:180},{x:400,y:350},{x:550,y:350},{x:550,y:180},{x:720,y:180},{x:720,y:450},{x:900,y:450},{x:900,y:300},{x:1030,y:300}]
+},
+{
+    nombre:"Camino del Laberinto",
+    puntos:[{x:85,y:95},{x:280,y:95},{x:280,y:300},{x:150,y:300},{x:150,y:500},{x:380,y:500},{x:380,y:380},{x:600,y:380},{x:600,y:520},{x:820,y:520},{x:820,y:250},{x:1030,y:250}]
+},
+{
+    nombre:"Camino de las Ventanas",
+    puntos:[{x:85,y:95},{x:250,y:95},{x:250,y:250},{x:450,y:250},{x:450,y:100},{x:650,y:100},{x:650,y:300},{x:850,y:300},{x:850,y:180},{x:1030,y:180},{x:1030,y:500}]
+},
+{
+    nombre:"Camino del Relámpago Azul",
+    puntos:[{x:85,y:95},{x:400,y:95},{x:400,y:200},{x:250,y:200},{x:250,y:400},{x:500,y:400},{x:500,y:280},{x:700,y:280},{x:700,y:500},{x:900,y:500},{x:900,y:350},{x:1030,y:350}]
+},
+{
+    nombre:"Camino del Jardín",
+    puntos:[{x:85,y:95},{x:200,y:95},{x:200,y:180},{x:350,y:180},{x:350,y:350},{x:200,y:350},{x:200,y:500},{x:500,y:500},{x:500,y:400},{x:750,y:400},{x:750,y:500},{x:1030,y:500}]
+},
+{
+    nombre:"Camino de los Colores",
+    puntos:[{x:85,y:95},{x:300,y:95},{x:300,y:180},{x:500,y:180},{x:500,y:320},{x:350,y:320},{x:350,y:480},{x:600,y:480},{x:600,y:350},{x:850,y:350},{x:850,y:500},{x:1030,y:500}]
+},
+{
+    nombre:"Camino de la Cascada",
+    puntos:[{x:85,y:95},{x:220,y:95},{x:220,y:300},{x:400,y:300},{x:400,y:150},{x:600,y:150},{x:600,y:400},{x:780,y:400},{x:780,y:200},{x:930,y:200},{x:930,y:500},{x:1030,y:500}]
+},
+{
+    nombre:"Camino de la Espiral",
+    puntos:[{x:85,y:95},{x:350,y:95},{x:350,y:200},{x:200,y:200},{x:200,y:400},{x:500,y:400},{x:500,y:250},{x:700,y:250},{x:700,y:450},{x:900,y:450},{x:900,y:300},{x:1030,y:300}]
+},
+{
+    nombre:"Camino de Sonic",
+    puntos:[{x:85,y:95},{x:250,y:95},{x:250,y:350},{x:420,y:350},{x:420,y:180},{x:600,y:180},{x:600,y:450},{x:780,y:450},{x:780,y:300},{x:920,y:300},{x:920,y:500},{x:1030,y:500}]
+},
+{
+    nombre:"Camino de la Aventura",
+    puntos:[{x:85,y:95},{x:320,y:95},{x:320,y:220},{x:500,y:220},{x:500,y:100},{x:700,y:100},{x:700,y:300},{x:850,y:300},{x:850,y:450},{x:650,y:450},{x:650,y:520},{x:900,y:520},{x:1030,y:520}]
+}
+];
+
+let caminoActual=0;
+
+/* Elige una pareja diferente de personaje y meta al azar. */
+function ElegirAventura(){
+    if(aventuras.length===0)return;
+    let indice;
+    do{
+        indice=Math.floor(Math.random()*aventuras.length);
+    }while(aventuras.length>1 && indice===ultimaAventura);
+    ultimaAventura=indice;
+    const aventura=aventuras[indice];
+    const personaje=document.getElementById("personaje");
+    const meta=document.getElementById("meta");
+    personaje.style.display="block";
+    personaje.style.visibility="visible";
+    personaje.src=aventura.personaje;
+    personaje.alt=aventura.nombre;
+    meta.style.display="block";
+    meta.style.visibility="visible";
+    meta.src=aventura.meta;
+    meta.alt=aventura.nombre;
+}
+
+/* Devuelve el camino que se está mostrando. */
+function ObtenerCamino(){
+    return caminos[caminoActual];
+}
+
+/* Coloca las imágenes exactamente sobre los círculos de inicio y meta. */
+function AjustarImagenesAlCamino(){
+    const datos=ObtenerCamino();
+    const inicio=datos.puntos[0];
+    const meta=datos.puntos[datos.puntos.length-1];
+    const personaje=document.getElementById("personaje");
+    const metaImagen=document.getElementById("meta");
+    const zona=document.querySelector(".zona-juego");
+    const canvasRect=canvas.getBoundingClientRect();
+    const zonaRect=zona.getBoundingClientRect();
+    const tamanoCirculoCanvas=54;
+    const escalaX=canvasRect.width/canvas.width;
+    const escalaY=canvasRect.height/canvas.height;
+    const escala=Math.min(escalaX,escalaY);
+    const tamano=tamanoCirculoCanvas*escala;
+    const offsetX=canvasRect.left-zonaRect.left;
+    const offsetY=canvasRect.top-zonaRect.top;
+
+    personaje.style.width=tamano+"px";
+    personaje.style.height=tamano+"px";
+    personaje.style.left=(offsetX+inicio.x*escalaX-tamano/2)+"px";
+    personaje.style.top=(offsetY+inicio.y*escalaY-tamano/2)+"px";
+    personaje.style.right="auto";
+    personaje.style.bottom="auto";
+
+    metaImagen.style.width=tamano+"px";
+    metaImagen.style.height=tamano+"px";
+    metaImagen.style.left=(offsetX+meta.x*escalaX-tamano/2)+"px";
+    metaImagen.style.top=(offsetY+meta.y*escalaY-tamano/2)+"px";
+    metaImagen.style.right="auto";
+    metaImagen.style.bottom="auto";
+}
+
+/* Reajusta las imágenes si cambia el tamaño del laberinto. */
+window.addEventListener("resize",function(){
+    AjustarImagenesAlCamino();
+});
+
+/* ===== MÚSICA DE FONDO =====
+   Esta función solo se llama al pulsar INICIAR JUEGO.
+*/
+function ReproducirMusica(){
+    const audio=document.getElementById("musicaFondo");
+    if(canciones.length===0)return;
+
+    let indice;
+    do{
+        indice=Math.floor(Math.random()*canciones.length);
+    }while(canciones.length>1 && indice===ultimaCancion);
+
+    ultimaCancion=indice;
+    audio.src=canciones[indice].archivo;
+    audio.volume=0.22;
+    audio.load();
+
+    /* El clic del usuario permite que el navegador intente reproducirla. */
+    audio.play().catch(()=>{
+        console.error("No se pudo reproducir la música. Revisa la ruta del archivo MP3.");
+    });
+}
+
+/* Al terminar una canción, selecciona otra al azar. */
+document.getElementById("musicaFondo").addEventListener("ended",function(){
+    ReproducirMusica();
+});
+
+/* IMPORTANTE: no se llama a ReproducirMusica() al cargar la página. */
+function IniciarJuego(){
+    document.getElementById("bienvenida").classList.add("oculto");
+    ReproducirMusica();
+}
+
+/* Cambia entre los diferentes tipos de efectos. */
+function CambiarEfecto(){
+    tipoEfecto++;
+    if(tipoEfecto>=tiposEfecto.length){
+        tipoEfecto=0;
+    }
+    document.getElementById("efectoTexto").textContent=tiposEfecto[tipoEfecto];
+}
+
+/* Dibuja el recorrido. */
+function Dibujar(){
+    const datos=ObtenerCamino();
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    /* Fondo con una cuadrícula muy suave. */
+    ctx.save();
+    ctx.strokeStyle="rgba(80,100,200,.07)";
+    ctx.lineWidth=1;
+
+    for(let x=40;x<canvas.width;x+=40){
+        ctx.beginPath();
+        ctx.moveTo(x,0);
+        ctx.lineTo(x,canvas.height);
+        ctx.stroke();
+    }
+    for(let y=40;y<canvas.height;y+=40){
+        ctx.beginPath();
+        ctx.moveTo(0,y);
+        ctx.lineTo(canvas.width,y);
+        ctx.stroke();
+    }
+    ctx.restore();
+
+    /* Camino exterior. */
+    ctx.beginPath();
+    datos.puntos.forEach((p,i)=>{
+        if(i===0)ctx.moveTo(p.x,p.y);
+        else ctx.lineTo(p.x,p.y);
+    });
+    ctx.lineWidth=78;
+    ctx.lineCap="round";
+    ctx.lineJoin="round";
+    ctx.strokeStyle="#15FF00";
+    ctx.stroke();
+
+    /* Camino interior. */
+    ctx.beginPath();
+    datos.puntos.forEach((p,i)=>{
+        if(i===0)ctx.moveTo(p.x,p.y);
+        else ctx.lineTo(p.x,p.y);
+    });
+    ctx.lineWidth=60;
+    ctx.strokeStyle="#D6FFE6";
+    ctx.stroke();
+
+    /* Línea central de orientación. */
+    ctx.beginPath();
+    datos.puntos.forEach((p,i)=>{
+        if(i===0)ctx.moveTo(p.x,p.y);
+        else ctx.lineTo(p.x,p.y);
+    });
+    ctx.lineWidth=4;
+    ctx.setLineDash([10,12]);
+    ctx.strokeStyle="rgb(0,90,0)";
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* Círculos de inicio y meta. */
+    const inicio=datos.puntos[0];
+    const meta=datos.puntos[datos.puntos.length-1];
+    const radioMarcador=27;
+    const bordeMarcador=5;
+
+    ctx.beginPath();
+    ctx.arc(inicio.x,inicio.y,radioMarcador,0,Math.PI*2);
+    ctx.fillStyle="#8ee3ad";
+    ctx.fill();
+    ctx.lineWidth=bordeMarcador;
+    ctx.strokeStyle="white";
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(meta.x,meta.y,radioMarcador,0,Math.PI*2);
+    ctx.fillStyle="#ffe16b";
+    ctx.fill();
+    ctx.lineWidth=bordeMarcador;
+    ctx.stroke();
+
+    DibujarParticulas();
+}
+
+/* Convierte la posición del ratón a la posición del canvas. */
+function PosicionRaton(evento){
+    const rect=canvas.getBoundingClientRect();
+    return{
+        x:(evento.clientX-rect.left)*(canvas.width/rect.width),
+        y:(evento.clientY-rect.top)*(canvas.height/rect.height)
+    };
+}
+
+/* Calcula la distancia entre dos puntos. */
+function Distancia(a,b){
+    return Math.hypot(a.x-b.x,a.y-b.y);
+}
+
+/* Calcula la distancia entre un punto y una línea. */
+function DistanciaSegmento(p,a,b){
+    const dx=b.x-a.x;
+    const dy=b.y-a.y;
+    if(dx===0&&dy===0)return Distancia(p,a);
+    let t=((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy);
+    t=Math.max(0,Math.min(1,t));
+    const punto={x:a.x+t*dx,y:a.y+t*dy};
+    return Distancia(p,punto);
+}
+
+/* Comprueba si el ratón se encuentra dentro del camino. */
+function EstaEnCamino(punto){
+    const puntos=ObtenerCamino().puntos;
+    for(let i=0;i<puntos.length-1;i++){
+        if(DistanciaSegmento(punto,puntos[i],puntos[i+1])<=38){
+            return true;
+        }
+    }
+    return false;
+}
+
+/* Determina en qué tramo del recorrido está el jugador. */
+function ObtenerTramo(punto){
+    const puntos=ObtenerCamino().puntos;
+    let menor=Infinity;
+    let mejor=0;
+    for(let i=0;i<puntos.length-1;i++){
+        const d=DistanciaSegmento(punto,puntos[i],puntos[i+1]);
+        if(d<menor){
+            menor=d;
+            mejor=i;
+        }
+    }
+    return mejor;
+}
+
+/* Crea pequeñas partículas luminosas. */
+function CrearParticulas(punto,cantidad=3){
+    if(!efectosActivos)return;
+    for(let i=0;i<cantidad;i++){
+        particulas.push({
+            x:punto.x+(Math.random()-.5)*20,
+            y:punto.y+(Math.random()-.5)*20,
+            vx:(Math.random()-.5)*1,
+            vy:(Math.random()-.5)*1,
+            vida:1,
+            tam:3+Math.random()*5
+        });
+    }
+}
+
+/* Dibuja las partículas y actualiza su movimiento. */
+function DibujarParticulas(){
+    for(let i=particulas.length-1;i>=0;i--){
+        const p=particulas[i];
+        p.x+=p.vx;
+        p.y+=p.vy;
+        p.vida-=.018;
+        if(p.vida<=0){
+            particulas.splice(i,1);
+            continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha=p.vida;
+        ctx.shadowBlur=12;
+        ctx.shadowColor="#88FF61";
+        ctx.fillStyle="#0004FF";
+
+        if((p.tipo??tipoEfecto)===0){
+            /* Efecto de estrellas. */
+            ctx.beginPath();
+            for(let j=0;j<10;j++){
+                const ang=-Math.PI/2+j*Math.PI/5;
+                const radio=j%2===0?p.tam:p.tam*.45;
+                const x=p.x+Math.cos(ang)*radio;
+                const y=p.y+Math.sin(ang)*radio;
+                if(j===0)ctx.moveTo(x,y);
+                else ctx.lineTo(x,y);
+            }
+            ctx.closePath();
+            ctx.fill();
+        }else if((p.tipo??tipoEfecto)===1){
+            /* Efecto de burbujas. */
+            ctx.beginPath();
+            ctx.arc(p.x,p.y,p.tam,0,Math.PI*2);
+            ctx.strokeStyle="#00B06F";
+            ctx.lineWidth=2;
+            ctx.stroke();
+        }else if((p.tipo??tipoEfecto)===2){
+            /* Efecto de corazones. */
+            ctx.font=(p.tam*2.4)+"px Arial";
+            ctx.fillText("♥",p.x-p.tam,p.y+p.tam);
+        }else if((p.tipo??tipoEfecto)===3){
+            /* Efecto de confeti. */
+            ctx.fillRect(p.x,p.y,p.tam*1.8,p.tam*.7);
+        }else{
+            /* Efecto de arcoíris. */
+            const colores=["#ff8fab","#ffd95a","#72e0d2","#8eafff","#b89aff"];
+            ctx.beginPath();
+            ctx.arc(p.x,p.y,p.tam,0,Math.PI*2);
+            ctx.fillStyle=colores[Math.floor(Math.random()*colores.length)];
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+}
+
+/* Dibuja el rastro que deja el jugador. */
+function Rastro(punto){
+    if(!ultimoPunto){
+        ultimoPunto=punto;
+        return;
+    }
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(ultimoPunto.x,ultimoPunto.y);
+    ctx.lineTo(punto.x,punto.y);
+    ctx.lineWidth=14;
+    ctx.lineCap="round";
+    ctx.strokeStyle="rgba(114,224,210,.75)";
+    ctx.shadowBlur=18;
+    ctx.shadowColor="#88FF61";
+    ctx.stroke();
+    ctx.restore();
+    CrearParticulas(punto);
+    ultimoPunto=punto;
+}
+
+/* Empieza el recorrido solamente cerca del inicio. */
+canvas.addEventListener("mousedown",function(evento){
+    const punto=PosicionRaton(evento);
+    const inicio=ObtenerCamino().puntos[0];
+    if(Distancia(punto,inicio)<=65){
+        arrastrando=true;
+        ultimoPunto=punto;
+        document.getElementById("estado").textContent="Siguiendo el camino ✨";
+    }
+});
+
+/* Sigue al jugador mientras mantiene presionado el ratón. */
+canvas.addEventListener("mousemove",function(evento){
+    if(!arrastrando)return;
+    const punto=PosicionRaton(evento);
+
+    /* Salirse del camino solo detiene el recorrido, sin penalización. */
+    if(!EstaEnCamino(punto)){
+        arrastrando=false;
+        ultimoPunto=null;
+        document.getElementById("estado").textContent="Vuelve al camino cuando quieras 💙";
+        return;
+    }
+
+    Rastro(punto);
+    const tramo=ObtenerTramo(punto);
+
+    /* Registra el tramo recorrido. */
+    if(tramo!==tramoActual){
+        tramoActual=tramo;
+        const notas=[261.63,293.66,329.63,349.23,392,440,493.88,523.25];
+    }
+
+    const puntos=ObtenerCamino().puntos;
+    const meta=puntos[puntos.length-1];
+    if(Distancia(punto,meta)<=58){
+        arrastrando=false;
+        ultimoPunto=null;
+        Ganar();
+    }
+});
+
+/* Al soltar el ratón se detiene el movimiento sin penalización. */
+window.addEventListener("mouseup",function(){
+    if(arrastrando){
+        arrastrando=false;
+        ultimoPunto=null;
+        document.getElementById("estado").textContent="Listo para continuar 🌈";
+    }
+});
+
+/* Reproduce el sonido especial al completar un camino. */
+function ReproducirSonidoCompletado(){
+    const sonido=document.getElementById("sonidoCompletado");
+    sonido.src="../Música/completado.mp3";
+    sonido.volume=.45;
+    sonido.currentTime=0;
+    sonido.play().catch(()=>{});
+}
+
+/* Efecto de fiesta al completar el camino. */
+function Fiesta(){
+    if(!efectosActivos)return;
+    for(let i=0;i<110;i++){
+        particulas.push({
+            x:canvas.width/2,
+            y:canvas.height/2,
+            vx:(Math.random()-.5)*9,
+            vy:(Math.random()-.5)*9-2,
+            vida:1.4+Math.random(),
+            tam:4+Math.random()*8,
+            tipo:tipoEfecto
+        });
+    }
+}
+
+/* Se ejecuta cuando el jugador llega a la meta. */
+function Ganar(){
+    completados++;
+    document.getElementById("completados").textContent=completados;
+    document.getElementById("estado").textContent="¡Camino completado! 🎉";
+    document.getElementById("mensajeFinal").innerHTML=
+        "Completaste <strong>"+ObtenerCamino().nombre+
+        "</strong>. ¡Seguiste el recorrido con mucha concentración y perseverancia!";
+    document.getElementById("modal").classList.add("visible");
+    ReproducirSonidoCompletado();
+    Fiesta();
+}
+
+/* Empieza un nuevo camino sin repetir inmediatamente el anterior. */
+function NuevoNivel(){
+    if(caminos.length>1){
+        let nuevoCamino;
+        do{
+            nuevoCamino=Math.floor(Math.random()*caminos.length);
+        }while(nuevoCamino===caminoActual);
+        caminoActual=nuevoCamino;
+    }
+
+    ElegirAventura();
+    AjustarImagenesAlCamino();
+    document.getElementById("modal").classList.remove("visible");
+    arrastrando=false;
+    ultimoPunto=null;
+    tramoActual=-1;
+    particulas=[];
+    document.getElementById("estado").textContent="Listo para comenzar 🌟";
+    Dibujar();
+}
+
+/* Animación continua de las partículas. */
+function Animar(){
+    Dibujar();
+    requestAnimationFrame(Animar);
+}
+
+/* Oculta las imágenes si no se pueden cargar. */
+document.getElementById("personaje").addEventListener("error",function(){
+    this.style.visibility="hidden";
+});
+document.getElementById("meta").addEventListener("error",function(){
+    this.style.visibility="hidden";
+});
+
+/* Muestra las imágenes cuando cargan correctamente. */
+document.getElementById("personaje").addEventListener("load",function(){
+    this.style.display="block";
+    this.style.visibility="visible";
+});
+document.getElementById("meta").addEventListener("load",function(){
+    this.style.display="block";
+    this.style.visibility="visible";
+});
+
+/* Prepara el primer personaje y el primer camino. */
+ElegirAventura();
+AjustarImagenesAlCamino();
+Dibujar();
+Animar();
+
+/* No se inicia la música al cargar la página.
+   Solo IniciarJuego() llama a ReproducirMusica(). */
+</script>
+
+</body>
+</html>

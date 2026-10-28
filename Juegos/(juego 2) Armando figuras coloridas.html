@@ -1,0 +1,4929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mi Mundo - Laboratorio de Mezclas Mágicas</title>
+
+<style>
+/* ==============================================================
+   MI MUNDO - LABORATORIO DE MEZCLAS MÁGICAS
+   ==============================================================
+   Esta versión está pensada para:
+   - Juego INFINITO.
+   - Recetas aleatorias.
+   - Sin barra de progreso.
+   - Sin contador de misiones.
+   - Sin botón "Repetir misión".
+   - Sin patrones.
+   - Muchas figuras y muchos colores.
+   - Botones de categorías que abren una ventana con opciones.
+   - Imágenes preparadas para personalizar con Sonic.
+   - Música de fondo aleatoria, igual que en el juego del laberinto.
+   - Historial de creaciones que crece mientras el juego permanece abierto.
+   - Al cerrar/reabrir el HTML, el historial comienza nuevamente.
+   ============================================================== */
+
+
+/* ==============================================================
+   COLORES GENERALES
+   Puedes cambiar estos colores para adaptarlos al diseño de Sonic.
+   ============================================================== */
+
+:root{
+    --azul:#1159ea;
+    --azulOscuro:#1839a8;
+    --celeste:#eaf8ff;
+    --blanco:#ffffff;
+    --verde:#70d66c;
+    --amarillo:#ffd23f;
+    --rojo:#ff6464;
+    --morado:#b989ff;
+    --rosa:#ff9fc5;
+    --naranja:#ff9b52;
+    --turquesa:#43d8c0;
+    --texto:#19324a;
+    --borde:#d5e7f3;
+}
+
+
+/* ==============================================================
+   CONFIGURACIÓN GENERAL
+   ============================================================== */
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--texto);
+
+    /* ==========================================================
+       IMAGEN DE FONDO DEL JUEGO
+       ----------------------------------------------------------
+       Cuando tengas tu fondo, reemplaza la ruta por la imagen
+       que quieras utilizar.
+
+       Ejemplo:
+       ../Imágenes/FondoLaboratorioSonic.png
+       ========================================================== */
+
+    background-image:url("../Imágenes/FondoLaboratorioSonic.png");
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+
+    /* Si la imagen no existe, este degradado funciona como fondo. */
+    background-color:#3af634;
+}
+
+
+/* ==============================================================
+   BOTONES
+   ============================================================== */
+
+button{
+    font-family:inherit;
+}
+
+
+/* ==============================================================
+   CONTENEDOR PRINCIPAL
+   ============================================================== */
+
+.contenedor{
+    width:1200px;
+    max-width:96%;
+    margin:25px auto;
+
+    background:rgba(40, 246, 115, 0.902);
+
+    border:3px solid var(--borde);
+    border-radius:28px;
+
+    overflow:hidden;
+
+    box-shadow:0 15px 40px rgba(41, 171, 31, 0.294);
+}
+
+
+/* ==============================================================
+   ENCABEZADO
+   --------------------------------------------------------------
+   Aquí NO hay espacio para una imagen de Sonic.
+   El usuario pidió eliminar esos espacios del encabezado.
+   ============================================================== */
+
+.encabezado{
+    min-height:120px;
+
+    padding:25px 32px;
+
+    background:linear-gradient(
+        135deg,
+        var(--azul),
+        #21f391
+    );
+
+    color:white;
+
+    text-align:center;
+}
+
+.encabezado h1{
+    margin:0 0 8px;
+    font-size:34px;
+}
+
+.encabezado p{
+    margin:0;
+    font-size:17px;
+    line-height:1.45;
+}
+
+
+/* ==============================================================
+   INSTRUCCIÓN PRINCIPAL
+   ============================================================== */
+
+.instruccion{
+    margin:20px 30px; 
+
+    padding:17px 20px;
+
+    text-align:center;
+
+    font-size:19px;
+    font-weight:bold;
+
+    background:#d2f86a;
+
+    border:3px solid #4e9501;
+
+    border-radius:18px;
+}
+
+
+/* ==============================================================
+   RECETA
+   ============================================================== */
+
+.receta{
+    width:600px;
+    max-width:90%;
+
+    margin:0 auto 18px;
+
+    padding:15px 22px;
+
+    text-align:center;
+
+    background:rgb(136, 255, 203);
+
+    border:3px solid var(--borde);
+
+    border-radius:20px;
+
+    box-shadow:0 8px 20px rgba(32, 245, 153, 0.326);
+}
+
+.receta-titulo{
+    font-size:14px;
+    font-weight:bold;
+    color:var(--azulOscuro);
+    margin-bottom:7px;
+    letter-spacing:.5px;
+}
+
+.receta-dato{
+    font-size:24px;
+    font-weight:bold;
+}
+
+
+/* ==============================================================
+   LABORATORIO
+   ============================================================== */
+
+.laboratorio{
+    display:grid;
+
+    grid-template-columns:235px 1fr 235px;
+
+    gap:20px;
+
+    padding:5px 30px 25px;
+}
+
+
+/* ==============================================================
+   PANELES LATERALES
+   ============================================================== */
+
+.panel{
+    min-height:455px;
+
+    padding:20px;
+
+    background:rgb(199, 65, 252);
+
+    border:3px solid var(--borde);
+
+    border-radius:24px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+}
+
+.panel h2{
+    margin:0 0 10px;
+
+    font-size:22px;
+}
+
+.panel p{
+    color:#5e7485;
+
+    line-height:1.45;
+
+    font-size:15px;
+}
+
+
+/* ==============================================================
+   BOTONES GRANDES DE CATEGORÍA
+   --------------------------------------------------------------
+   En vez de mostrar 10 o 12 opciones permanentemente,
+   solamente mostramos un botón.
+
+   Al pulsarlo aparece una ventana con todas las opciones.
+   ============================================================== */
+
+.boton-categoria{
+    width:185px;
+    min-height:125px;
+
+    border:4px solid #000793;
+
+    border-radius:24px;
+
+    background:rgb(0, 234, 255);
+
+    cursor:pointer;
+
+    font-size:21px;
+    font-weight:bold;
+
+    color:var(--texto);
+
+    box-shadow:0 8px 0 #007387;
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease;
+}
+
+.boton-categoria:hover{
+    transform:translateY(-3px);
+
+    border-color:var(--azul);
+
+    box-shadow:0 11px 20px rgba(1, 44, 171, 0.654);
+}
+
+.boton-categoria:active{
+    transform:translateY(3px);
+
+    box-shadow:0 4px 0 #0e5484;
+}
+
+
+/* ==============================================================
+   MINI VISTA DE LA SELECCIÓN
+   ============================================================== */
+
+.seleccion-info{
+    width:100%;
+
+    margin-top:22px;
+
+    padding:13px;
+
+    background:rgb(245, 102, 178);
+
+    border:2px solid var(--borde);
+
+    border-radius:16px;
+
+    font-weight:bold;
+}
+
+.mini-seleccion{
+    width:65px;
+    height:65px;
+
+    margin:8px auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+
+/* ==============================================================
+   CENTRO DEL LABORATORIO
+   ============================================================== */
+
+.centro{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+
+/* ==============================================================
+   MÁQUINA CENTRAL
+   ============================================================== */
+
+.maquina{
+    position:relative;
+
+    width:500px;
+    max-width:100%;
+
+    height:365px;
+
+    border-radius:38px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #e6f9b0,
+            #affdbf
+        );
+
+    border:7px solid #8fc5e8;
+
+    box-shadow:
+        inset 0 0 0 5px rgb(243, 173, 34),
+        0 15px 35px rgba(16, 82, 24, 0.846);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+
+/* Decoraciones superiores de la máquina. */
+
+.maquina::before{
+    content:"";
+
+    position:absolute;
+
+    top:20px;
+    left:35px;
+
+    width:75px;
+    height:14px;
+
+    border-radius:20px;
+
+    background:#79baff;
+}
+
+.maquina::after{
+    content:"";
+
+    position:absolute;
+
+    top:20px;
+    right:35px;
+
+    width:55px;
+    height:14px;
+
+    border-radius:20px;
+
+    background:#72d96b;
+}
+
+
+/* Pantalla superior. */
+
+.visor{
+    position:absolute;
+
+    top:48px;
+
+    padding:8px 22px;
+
+    background:#a350b7;
+
+    color:#dff8ff;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+    letter-spacing:1px;
+}
+
+
+/* ==============================================================
+   ÁREA DE RESULTADO CENTRAL
+   ============================================================== */
+
+.zona-resultado{
+    width:290px;
+    height:245px;
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:8px;
+
+    border:4px dashed #9bc6df;
+
+    border-radius:28px;
+
+    background:rgb(56, 62, 237);
+
+    position:relative;
+}
+
+
+/* SVG de la figura. */
+
+#figuraSVG{
+    width:170px;
+    height:170px;
+
+    overflow:visible;
+}
+
+
+/* Animación al cambiar la figura. */
+
+.animar{
+    animation:
+        transformar .65s ease;
+}
+
+@keyframes transformar{
+
+    0%{
+        transform:scale(.75) rotate(-7deg);
+        opacity:.4;
+    }
+
+    50%{
+        transform:scale(1.08) rotate(5deg);
+        opacity:1;
+    }
+
+    100%{
+        transform:scale(1) rotate(0);
+        opacity:1;
+    }
+}
+
+
+/* ==============================================================
+   IMAGEN DEL COLOR ELEGIDO
+   --------------------------------------------------------------
+   AQUÍ PUEDES COLOCAR LA CARA PNG TRANSPARENTE DE SONIC.
+
+   Ejemplo:
+   ../Imágenes/Colores/SonicAzul.png
+
+   La imagen seleccionada aparece:
+   - En la máquina.
+   - En el mensaje de éxito.
+   - En cada creación guardada.
+   ============================================================== */
+
+.imagen-color-resultado{
+    width:82px;
+    height:82px;
+
+    object-fit:contain;
+
+    border-radius:0;
+
+    background:transparent;
+
+    border:0;
+
+    padding:0;
+
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    z-index:3;
+    pointer-events:none;
+}
+
+
+/* ==============================================================
+   INDICADOR DE PASOS
+   ============================================================== */
+
+.pasos{
+    display:flex;
+    gap:10px;
+
+    margin-top:15px;
+}
+
+.paso{
+    padding:8px 13px;
+
+    border-radius:15px;
+
+    background:#e7f1f7;
+
+    color:#607789;
+
+    font-weight:bold;
+
+    font-size:13px;
+}
+
+.paso.activo{
+    background:#dce8ff;
+
+    color:var(--azulOscuro);
+}
+
+.paso.completo{
+    background:#def6dc;
+
+    color:#3f9138;
+}
+
+
+/* ==============================================================
+   COLECCIÓN INFINITA
+   --------------------------------------------------------------
+   No tiene contador ni límite.
+   Cada creación completada se agrega al final.
+   ============================================================== */
+
+.coleccion{
+    margin:0 30px 25px;
+
+    padding:20px;
+
+    background:#f9fcff;
+
+    border:3px solid var(--borde);
+
+    border-radius:24px;
+}
+
+.coleccion h2{
+    margin:0 0 8px;
+
+    text-align:center;
+
+    font-size:22px;
+}
+
+.coleccion-descripcion{
+    text-align:center;
+
+    color:#607789;
+
+    margin:0 0 16px;
+
+    font-size:14px;
+}
+
+
+/* Galería que crece hacia abajo. */
+
+.galeria{
+    display:grid;
+
+    grid-template-columns:
+        repeat(6, minmax(120px,1fr));
+
+    gap:12px;
+
+    align-items:start;
+}
+
+
+/* ==============================================================
+   TARJETA DE CADA CREACIÓN
+   ============================================================== */
+
+.creacion{
+    min-height:145px;
+
+    padding:10px;
+
+    background:white;
+
+    border:3px solid #dceaf3;
+
+    border-radius:18px;
+
+    text-align:center;
+
+    animation:aparecer .45s ease;
+}
+
+@keyframes aparecer{
+
+    from{
+        transform:scale(.75);
+        opacity:0;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+.creacion svg{
+    width:65px;
+    height:65px;
+}
+
+.creacion-imagen{
+    width:48px;
+    height:48px;
+
+    object-fit:contain;
+
+    display:block;
+
+    margin:-2px auto 4px;
+
+    border-radius:10px;
+}
+
+.creacion-nombre{
+    font-weight:bold;
+
+    font-size:13px;
+
+    line-height:1.25;
+}
+
+
+/* ==============================================================
+   MODALES DE OPCIONES
+   ============================================================== */
+
+.modal{
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(24,48,74,.60);
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    z-index:2000;
+
+    padding:20px;
+}
+
+.modal.oculto{
+    display:none;
+}
+
+.tarjeta-opciones{
+    width:760px;
+    max-width:95%;
+
+    max-height:88vh;
+
+    overflow:auto;
+
+    padding:25px;
+
+    background:white;
+
+    border:5px solid #c5e4f5;
+
+    border-radius:28px;
+
+    box-shadow:0 25px 70px rgba(0,0,0,.22);
+
+    animation:entrada .35s ease;
+}
+
+@keyframes entrada{
+
+    from{
+        transform:scale(.86);
+        opacity:0;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+.tarjeta-opciones h2{
+    margin:0 0 7px;
+
+    text-align:center;
+
+    color:var(--azulOscuro);
+
+    font-size:27px;
+}
+
+.tarjeta-opciones p{
+    text-align:center;
+
+    color:#607789;
+
+    margin-top:0;
+}
+
+
+/* ==============================================================
+   CUADRÍCULA DE FIGURAS Y COLORES
+   ============================================================== */
+
+.grid-opciones{
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:12px;
+
+    margin-top:18px;
+}
+
+
+/* ==============================================================
+   OPCIÓN INDIVIDUAL
+   ============================================================== */
+
+.opcion{
+    min-height:105px;
+
+    padding:9px;
+
+    border:3px solid #d4e5ef;
+
+    border-radius:18px;
+
+    background:#fafdff;
+
+    cursor:pointer;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:6px;
+
+    font-weight:bold;
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease;
+}
+
+.opcion:hover{
+    transform:translateY(-3px);
+
+    border-color:var(--azul);
+
+    box-shadow:
+        0 8px 18px rgba(79,124,255,.13);
+}
+
+.opcion.seleccionada{
+    border-color:var(--azul);
+
+    background:#edf3ff;
+
+    box-shadow:
+        0 0 0 4px rgba(79,124,255,.12);
+}
+
+
+/* ==============================================================
+   ESPACIO DE IMAGEN PARA LOS BOTONES DE COLOR
+   --------------------------------------------------------------
+   Cada botón tiene una imagen preparada.
+
+   Puedes reemplazar el src por tu PNG de Sonic:
+
+   ../Imágenes/Colores/SonicAzul.png
+   ../Imágenes/Colores/SonicRojo.png
+   etc.
+
+   Si todavía no tienes las imágenes, se muestra un espacio limpio
+   con la palabra PNG.
+   ============================================================== */
+
+.imagen-opcion{
+    width:62px;
+    height:55px;
+
+    object-fit:contain;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:12px;
+
+    border:2px dashed #bcd5e4;
+
+    background:#f7fcff;
+
+    color:#7890a0;
+
+    font-size:10px;
+
+    overflow:hidden;
+}
+
+.imagen-opcion img{
+    width:100%;
+    height:100%;
+
+    object-fit:contain;
+}
+
+
+/* ==============================================================
+   FORMAS MINIATURA
+   ============================================================== */
+
+.forma-mini{
+    width:45px;
+    height:45px;
+
+    background:#b9c7d5;
+
+    display:block;
+}
+
+.forma-circulo{
+    border-radius:50%;
+}
+
+.forma-cuadrado{
+    border-radius:7px;
+}
+
+.forma-rectangulo{
+    width:58px;
+    height:38px;
+    border-radius:6px;
+}
+
+.forma-ovalo{
+    width:58px;
+    height:38px;
+    border-radius:50%;
+}
+
+.forma-triangulo{
+    width:0;
+    height:0;
+
+    background:transparent;
+
+    border-left:24px solid transparent;
+    border-right:24px solid transparent;
+    border-bottom:46px solid #b9c7d5;
+}
+
+.forma-rombo{
+    width:40px;
+    height:40px;
+
+    background:#b9c7d5;
+
+    transform:rotate(45deg);
+
+    border-radius:5px;
+}
+
+.forma-estrella{
+    color:#b9c7d5;
+
+    font-size:49px;
+
+    line-height:40px;
+}
+
+.forma-corazon{
+    color:#b9c7d5;
+
+    font-size:48px;
+
+    line-height:40px;
+}
+
+.forma-pentagono{
+    color:#b9c7d5;
+
+    font-size:48px;
+
+    line-height:40px;
+}
+
+.forma-hexagono{
+    color:#b9c7d5;
+
+    font-size:48px;
+
+    line-height:40px;
+}
+
+.forma-trapezoide{
+    width:54px;
+    height:45px;
+
+    background:#b9c7d5;
+
+    clip-path:polygon(
+        18% 0%,
+        82% 0%,
+        100% 100%,
+        0% 100%
+    );
+}
+
+
+/* ==============================================================
+   BOTÓN CERRAR
+   ============================================================== */
+
+.boton-cerrar{
+    display:block;
+
+    margin:18px auto 0;
+
+    padding:11px 22px;
+
+    border:0;
+
+    border-radius:15px;
+
+    background:#e9f4fb;
+
+    color:var(--texto);
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+
+/* ==============================================================
+   MODAL DE BIENVENIDA
+   --------------------------------------------------------------
+   NO tiene imagen de Sonic.
+   ============================================================== */
+
+.tarjeta-bienvenida{
+    width:560px;
+    max-width:95%;
+
+    padding:32px;
+
+    background:white;
+
+    border:5px solid #c5e4f5;
+
+    border-radius:30px;
+
+    text-align:center;
+
+    box-shadow:0 25px 70px rgba(0,0,0,.22);
+
+    animation:entrada .4s ease;
+}
+
+.tarjeta-bienvenida h2{
+    margin-top:0;
+
+    color:var(--azulOscuro);
+
+    font-size:30px;
+}
+
+.tarjeta-bienvenida p{
+    font-size:17px;
+
+    line-height:1.55;
+}
+
+.boton-iniciar{
+    margin-top:10px;
+
+    padding:16px 30px;
+
+    border:0;
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--azul),
+            #77b7ff
+        );
+
+    color:white;
+
+    font-size:19px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:0 6px 0 #3154b9;
+}
+
+
+/* ==============================================================
+   MODAL DE ÉXITO
+   --------------------------------------------------------------
+   Aquí NO se coloca una imagen de Sonic.
+   El mensaje muestra exactamente lo que el niño construyó.
+   ============================================================== */
+
+.tarjeta-exito{
+    width:540px;
+    max-width:95%;
+
+    padding:28px;
+
+    background:white;
+
+    border:5px solid #ffe48a;
+
+    border-radius:30px;
+
+    text-align:center;
+
+    box-shadow:0 25px 70px rgba(0,0,0,.22);
+
+    animation:entrada .4s ease;
+}
+
+.tarjeta-exito h2{
+    margin-top:0;
+
+    color:#4c9f42;
+
+    font-size:29px;
+}
+
+
+/* Resultado visual dentro del mensaje de éxito. */
+
+.resultado-exito{
+    margin:15px auto;
+
+    padding:15px;
+
+    width:270px;
+
+    background:#f7fcff;
+
+    border:3px solid #d9eaf4;
+
+    border-radius:20px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:7px;
+}
+
+.resultado-exito svg{
+    width:120px;
+    height:120px;
+}
+
+.resultado-exito img{
+    width:70px;
+    height:70px;
+
+    object-fit:contain;
+}
+
+
+/* ==============================================================
+   BOTÓN PRINCIPAL
+   ============================================================== */
+
+.boton{
+    border:0;
+
+    border-radius:16px;
+
+    padding:13px 22px;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    background:var(--azul);
+
+    color:white;
+
+    box-shadow:0 5px 0 #82c202;
+}
+
+.boton:active{
+    transform:translateY(3px);
+
+    box-shadow:0 2px 0 #3154b9;
+}
+
+
+/* ==============================================================
+   CELEBRACIÓN VISUAL
+   ============================================================== */
+
+.estrella{
+    position:fixed;
+
+    width:22px;
+    height:22px;
+
+    z-index:2500;
+
+    pointer-events:none;
+
+    animation:
+        subir 1.8s ease-out forwards;
+}
+
+@keyframes subir{
+
+    from{
+        transform:
+            translateY(0)
+            scale(.6)
+            rotate(0);
+
+        opacity:1;
+    }
+
+    to{
+        transform:
+            translateY(-400px)
+            scale(1.25)
+            rotate(180deg);
+
+        opacity:0;
+    }
+}
+
+
+/* ==============================================================
+   TEXTO DE AYUDA
+   ============================================================== */
+
+.ayuda{
+    margin-top:17px;
+
+    color:#607789;
+
+    line-height:1.45;
+
+    font-size:14px;
+}
+
+
+/* ==============================================================
+   MÚSICA
+   El audio es invisible porque solamente necesitamos la música.
+   ============================================================== */
+
+#musicaFondo{
+    display:none;
+}
+
+
+/* ==============================================================
+   PC
+   --------------------------------------------------------------
+   El diseño está pensado para computadora, como el laberinto.
+   No se agrega diseño responsive para teléfonos.
+   ============================================================== */
+
+
+/* ==============================================================
+   AJUSTES VISUALES FINALES
+   --------------------------------------------------------------
+   Esta sección corrige el centrado y el espacio del laboratorio.
+   No cambia la lógica del juego.
+   ============================================================== */
+
+.contenedor{
+    width:1120px;
+    max-width:94%;
+    margin:22px auto;
+}
+
+.encabezado{
+    padding:22px 28px;
+}
+
+.encabezado h1{
+    font-size:31px;
+}
+
+.laboratorio{
+    grid-template-columns:210px minmax(0,1fr) 210px;
+    gap:18px;
+    padding-left:24px;
+    padding-right:24px;
+}
+
+.panel{
+    min-height:430px;
+    padding:16px;
+}
+
+.boton-categoria{
+    width:175px;
+    min-height:112px;
+}
+
+.maquina{
+    width:430px;
+    height:335px;
+}
+
+.zona-resultado{
+    width:260px;
+    height:225px;
+}
+
+#figuraSVG{
+    width:150px;
+    height:150px;
+}
+
+.imagen-color-resultado{
+    width:58px;
+    height:58px;
+    padding:3px;
+    border-radius:13px;
+}
+
+/* El espacio del color siempre conserva el color debajo del PNG. */
+.imagen-opcion{
+    position:relative;
+    width:68px;
+    height:60px;
+    padding:3px;
+    border:2px solid rgba(0,0,0,.10);
+    background:#e5edf3;
+}
+
+.imagen-opcion img{
+    position:relative;
+    z-index:2;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    background:transparent;
+}
+
+.grid-opciones{
+    grid-template-columns:repeat(4,minmax(120px,1fr));
+}
+
+/* ==============================================================
+   OCTÁGONO: SILUETA GRIS, IGUAL QUE LAS DEMÁS FIGURAS
+   ============================================================== */
+
+.forma-mini.forma-octagono{
+    width:45px;
+    height:45px;
+    background:#b9c7d5;
+    clip-path:polygon(
+        30% 0%,
+        70% 0%,
+        100% 30%,
+        100% 70%,
+        70% 100%,
+        30% 100%,
+        0% 70%,
+        0% 30%
+    );
+    transform:none;
+}
+
+/* ==============================================================
+   TODAS LAS FIGURAS POLIGONALES DEL MENÚ SE VEN COMO SILUETAS.
+   ============================================================== */
+
+.forma-mini.forma-rombo{
+    transform:rotate(45deg);
+}
+
+.forma-mini.forma-triangulo{
+    background:transparent;
+}
+
+/* ==============================================================
+   LA GALERÍA SE CENTRA Y LAS TARJETAS NO SE SALEN.
+   ============================================================== */
+
+.coleccion{
+    margin-left:24px;
+    margin-right:24px;
+}
+
+.galeria{
+    grid-template-columns:repeat(6,minmax(0,1fr));
+}
+
+.creacion{
+    min-width:0;
+}
+
+/* ==============================================================
+   EVITA QUE EL CONTENIDO INTERIOR ROMPA LAS COLUMNAS.
+   ============================================================== */
+
+.panel,
+.centro,
+.maquina,
+.receta,
+.coleccion{
+    min-width:0;
+}
+
+
+/* ==============================================================
+   AJUSTE VISUAL FINAL DE LA MÁQUINA CENTRAL
+   --------------------------------------------------------------
+   La figura grande es ahora el único espacio de resultado.
+   La imagen PNG del personaje se coloca ENCIMA de la figura.
+   Se elimina el pequeño cuadro que ocupaba espacio.
+   ============================================================== */
+
+/* Quitamos las dos decoraciones azul y verde de la máquina. */
+.maquina::before,
+.maquina::after{
+    display:none !important;
+    content:none !important;
+}
+
+/* El visor queda arriba, separado de la figura. */
+.maquina .visor{
+    top:18px !important;
+    left:50% !important;
+    transform:translateX(-50%) !important;
+    z-index:10 !important;
+    white-space:nowrap;
+}
+
+/* La zona central deja de ser un cuadro con borde punteado. */
+.zona-resultado{
+    width:360px !important;
+    height:285px !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    position:relative !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:0 !important;
+    margin-top:25px;
+}
+
+/* La figura principal se hace más grande y queda centrada. */
+#figuraSVG{
+    width:225px !important;
+    height:225px !important;
+    overflow:visible !important;
+    position:relative !important;
+    z-index:1 !important;
+}
+
+/* La imagen PNG del personaje queda sobre la figura.
+   Al ser PNG transparente, solamente se verá la parte dibujada
+   del personaje y el color de la figura seguirá visible detrás. */
+.imagen-color-resultado{
+    position:absolute !important;
+    left:50% !important;
+    top:50% !important;
+
+    width:100px !important;
+    height:100px !important;
+
+    transform:translate(-50%,-50%) !important;
+
+    object-fit:contain !important;
+
+    padding:0 !important;
+    margin:0 !important;
+
+    border:0 !important;
+    border-radius:0 !important;
+
+    background:transparent !important;
+
+    z-index:3 !important;
+
+    pointer-events:none;
+}
+
+/* El nombre queda debajo de la figura, sin empujarla ni deformar
+   la distribución de la máquina. */
+#resultadoTexto{
+    position:absolute !important;
+    bottom:4px !important;
+    left:50% !important;
+    transform:translateX(-50%) !important;
+
+    z-index:5 !important;
+
+    white-space:nowrap;
+
+    font-size:17px;
+    font-weight:bold;
+
+    background:rgba(255,255,255,.88);
+    padding:4px 12px;
+    border-radius:12px;
+}
+
+/* El centro tiene un poco más de espacio para que todo quede
+   visualmente equilibrado dentro de la máquina. */
+.centro{
+    min-width:0 !important;
+}
+
+.maquina{
+    overflow:visible !important;
+}
+
+/* La máquina mantiene su marco exterior, pero la composición
+   interior ya no tiene un segundo cuadro. */
+.maquina{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+
+
+/* ==============================================================
+   CORRECCIÓN: FIGURA + PERSONAJE COMO UNA SOLA CREACIÓN
+   ============================================================== */
+.resultado-exito{
+    width:270px !important;
+    min-height:250px !important;
+    padding:15px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:8px !important;
+}
+
+.resultado-combinado{
+    position:relative !important;
+    width:160px !important;
+    height:160px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+
+.resultado-combinado svg{
+    width:160px !important;
+    height:160px !important;
+    position:absolute !important;
+    inset:0 !important;
+}
+
+.resultado-combinado img{
+    position:absolute !important;
+    left:50% !important;
+    top:50% !important;
+    transform:translate(-50%,-50%) !important;
+    width:78px !important;
+    height:78px !important;
+    object-fit:contain !important;
+    background:transparent !important;
+    border:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+    z-index:2 !important;
+    pointer-events:none !important;
+}
+
+.creacion-visual{
+    position:relative !important;
+    width:82px !important;
+    height:82px !important;
+    margin:0 auto 5px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+
+.creacion-visual svg{
+    position:absolute !important;
+    inset:0 !important;
+    width:82px !important;
+    height:82px !important;
+}
+
+.creacion-visual img{
+    position:absolute !important;
+    left:50% !important;
+    top:50% !important;
+    transform:translate(-50%,-50%) !important;
+    width:42px !important;
+    height:42px !important;
+    object-fit:contain !important;
+    border:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+    background:transparent !important;
+    z-index:2 !important;
+    pointer-events:none !important;
+}
+
+
+/* ==============================================================
+   AJUSTE FINAL DE LAS IMÁGENES DE LOS PERSONAJES
+   --------------------------------------------------------------
+   Las caras PNG quedan centradas, con tamaño intermedio,
+   sin deformarse y respetando la transparencia.
+   ============================================================== */
+
+.imagen-opcion{
+    width:72px !important;
+    height:64px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:hidden !important;
+    position:relative !important;
+}
+
+.imagen-opcion img{
+    width:54px !important;
+    height:54px !important;
+    max-width:54px !important;
+    max-height:54px !important;
+    object-fit:contain !important;
+    display:block !important;
+    margin:auto !important;
+    background:transparent !important;
+    border:0 !important;
+    padding:0 !important;
+}
+
+/* Cara PNG sobre la figura principal. */
+.imagen-color-resultado{
+    width:128px !important;
+    height:128px !important;
+    max-width:128px !important;
+    max-height:128px !important;
+    object-fit:contain !important;
+    background:transparent !important;
+    border:0 !important;
+    padding:0 !important;
+    left:50% !important;
+    top:50% !important;
+    transform:translate(-50%,-50%) !important;
+}
+
+/* Cara PNG en la celebración. */
+.resultado-combinado img{
+    width:112px !important;
+    height:112px !important;
+    max-width:112px !important;
+    max-height:112px !important;
+    object-fit:contain !important;
+    background:transparent !important;
+    border:0 !important;
+    padding:0 !important;
+    left:50% !important;
+    top:50% !important;
+    transform:translate(-50%,-50%) !important;
+}
+
+/* Cara PNG en la colección. */
+.creacion-visual img{
+    width:62px !important;
+    height:62px !important;
+    max-width:62px !important;
+    max-height:62px !important;
+    object-fit:contain !important;
+    background:transparent !important;
+    border:0 !important;
+    padding:0 !important;
+    left:50% !important;
+    top:50% !important;
+    transform:translate(-50%,-50%) !important;
+}
+
+
+/* ==============================================================
+   AJUSTE DE PERSONAJES PNG SIN RECORTE
+   --------------------------------------------------------------
+   Las imágenes NO se recortan.
+   Se utiliza contain para que se vea el PNG completo.
+   JavaScript calcula un tamaño adecuado según la figura.
+   ============================================================== */
+
+/* Contenedor de la cara sobre la figura. */
+.imagen-color-resultado{
+    position:absolute !important;
+
+    left:50% !important;
+    top:50% !important;
+
+    transform:translate(-50%,-50%) !important;
+
+    width:var(--tamano-personaje, 82px) !important;
+    height:var(--tamano-personaje, 82px) !important;
+
+    max-width:none !important;
+    max-height:none !important;
+
+    object-fit:contain !important;
+
+    background:transparent !important;
+
+    border:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+
+    z-index:3 !important;
+
+    pointer-events:none !important;
+}
+
+/* La imagen del menú de colores tampoco se recorta. */
+.imagen-opcion img{
+    width:56px !important;
+    height:56px !important;
+
+    max-width:100% !important;
+    max-height:100% !important;
+
+    object-fit:contain !important;
+
+    background:transparent !important;
+
+    border:0 !important;
+    padding:0 !important;
+    margin:auto !important;
+}
+
+/* Resultado de celebración: PNG completo y centrado. */
+.resultado-combinado img{
+    width:var(--tamano-personaje, 70px) !important;
+    height:var(--tamano-personaje, 70px) !important;
+
+    max-width:none !important;
+    max-height:none !important;
+
+    object-fit:contain !important;
+
+    background:transparent !important;
+
+    border:0 !important;
+    padding:0 !important;
+
+    left:50% !important;
+    top:50% !important;
+
+    transform:translate(-50%,-50%) !important;
+}
+
+/* Colección: también conserva el PNG completo. */
+.creacion-visual img{
+    width:var(--tamano-personaje, 45px) !important;
+    height:var(--tamano-personaje, 45px) !important;
+
+    max-width:none !important;
+    max-height:none !important;
+
+    object-fit:contain !important;
+
+    background:transparent !important;
+
+    border:0 !important;
+    padding:0 !important;
+
+    left:50% !important;
+    top:50% !important;
+
+    transform:translate(-50%,-50%) !important;
+}
+
+</style>
+
+<!-- ============================================================
+     FIN DEL CSS / INICIO DEL HTML
+     ============================================================ -->
+</head>
+
+
+<body>
+
+<!-- ============================================================
+     INICIO DEL HTML / ESTRUCTURA VISUAL
+     ============================================================ -->
+
+
+<!-- ==============================================================
+     AUDIO DE FONDO
+
+     IMPORTANTE:
+     Chrome puede bloquear el sonido automático.
+     Por eso la música se activa cuando el niño pulsa
+     "INICIAR JUEGO", igual que en el juego del laberinto.
+
+     Puedes agregar todas las canciones que quieras en
+     const canciones del JavaScript.
+     ============================================================== -->
+
+<audio id="musicaFondo" preload="auto"></audio>
+
+
+<!-- ==============================================================
+     MODAL DE BIENVENIDA
+     ============================================================== -->
+
+<div id="bienvenida" class="modal">
+
+    <div class="tarjeta-bienvenida">
+
+        <h2>🌈 ¡Bienvenido al Laboratorio Mágico! 🌈</h2>
+
+        <p>
+            Aquí vas a construir diferentes creaciones.
+            Cada vez aparecerá una combinación nueva.
+        </p>
+
+        <p>
+            🔷 Primero elige una <strong>figura</strong>.<br>
+            🎨 Después elige un <strong>color</strong>.<br>
+            ⭐ Cuando coincidan, tu creación estará terminada.
+        </p>
+
+        <p>
+            No hay tiempo límite, no hay vidas y
+            <strong>puedes jugar todas las veces que quieras.</strong>
+        </p>
+
+        <button
+            class="boton-iniciar"
+            onclick="IniciarJuego()">
+
+            🚀 INICIAR JUEGO
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==============================================================
+     MODAL DE FIGURAS
+     ============================================================== -->
+
+<div id="modalFiguras" class="modal oculto">
+
+    <div class="tarjeta-opciones">
+
+        <h2>🔷 Elige una figura</h2>
+
+        <p>
+            Mira todas las opciones y elige la figura indicada en la receta.
+        </p>
+
+        <div id="gridFiguras" class="grid-opciones"></div>
+
+        <button
+            class="boton-cerrar"
+            onclick="CerrarModal('modalFiguras')">
+
+            ← Volver
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==============================================================
+     MODAL DE COLORES
+     ============================================================== -->
+
+<div id="modalColores" class="modal oculto">
+
+    <div class="tarjeta-opciones">
+
+        <h2>🎨 Elige un color</h2>
+
+        <p>
+            Cada color puede tener tu propia imagen de Sonic.
+        </p>
+
+        <div id="gridColores" class="grid-opciones"></div>
+
+        <button
+            class="boton-cerrar"
+            onclick="CerrarModal('modalColores')">
+
+            ← Volver
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==============================================================
+     MODAL DE ÉXITO
+     ============================================================== -->
+
+<div id="modalExito" class="modal oculto">
+
+    <div class="tarjeta-exito">
+
+        <h2>🎉 ¡CREACIÓN COMPLETADA! 🎉</h2>
+
+        <p>
+            ¡Excelente! La forma y el color coinciden con la receta.
+        </p>
+
+        <!--
+            Aquí se genera automáticamente la figura terminada
+            y la imagen del color elegido.
+        -->
+
+        <div
+            id="resultadoExito"
+            class="resultado-exito">
+        </div>
+
+        <button
+            class="boton"
+            onclick="Continuar()">
+
+            ⭐ SIGUIENTE CREACIÓN
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==============================================================
+     CONTENEDOR PRINCIPAL
+     ============================================================== -->
+
+<main class="contenedor">
+
+
+    <!-- ==========================================================
+         ENCABEZADO
+         ========================================================== -->
+
+    <header class="encabezado">
+
+        <h1>🌟 Figuras coloridas</h1>
+
+        <p>
+            Observa la receta, elige la figura y después el color.
+        </p>
+
+    </header>
+
+
+    <!-- ==========================================================
+         INSTRUCCIÓN
+         ========================================================== -->
+
+    <div
+        id="instruccion"
+        class="instruccion">
+
+        👀 Observa la receta y comienza por la figura.
+
+    </div>
+
+
+    <!-- ==========================================================
+         RECETA ACTUAL
+         ========================================================== -->
+
+    <div class="receta">
+
+        <div class="receta-titulo">
+            🧾 RECETA DE LA AVENTURA
+        </div>
+
+        <div
+            id="recetaDato"
+            class="receta-dato">
+
+            Cargando...
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================================
+         LABORATORIO PRINCIPAL
+         ========================================================== -->
+
+    <section class="laboratorio">
+
+
+        <!-- ======================================================
+             PANEL FIGURAS
+             ====================================================== -->
+
+        <aside class="panel">
+
+            <h2>🔷 FIGURAS</h2>
+
+            <p>
+                Pulsa el botón para ver todas las figuras.
+            </p>
+
+            <button
+                class="boton-categoria"
+                onclick="AbrirFiguras()">
+
+                🔷<br>
+                ELEGIR<br>
+                FIGURA
+
+            </button>
+
+            <div class="seleccion-info">
+
+                Selección:
+
+                <div
+                    id="textoFormaElegida">
+
+                    Ninguna
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- ======================================================
+             CENTRO
+             ====================================================== -->
+
+        <section class="centro">
+
+
+            <!-- MÁQUINA -->
+
+            <div class="maquina">
+
+                <div class="visor">
+                    LABORATORIO ACTIVO
+                </div>
+
+
+                <!-- RESULTADO -->
+
+                <div class="zona-resultado">
+
+                    <svg
+                        id="figuraSVG"
+                        viewBox="0 0 200 200"
+                        aria-label="Figura seleccionada">
+
+                        <!-- La figura se crea desde JavaScript. -->
+
+                    </svg>
+
+
+                    <!--
+                        Imagen del color.
+                        Aquí aparecerá la imagen PNG que hayas asignado
+                        al color seleccionado.
+                    -->
+
+                    <img
+                        id="imagenColorResultado"
+                        class="imagen-color-resultado"
+                        alt="Imagen del color seleccionado">
+
+
+                    <strong
+                        id="resultadoTexto">
+
+                        Elige una figura
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- PASOS VISUALES -->
+
+            <div class="pasos">
+
+                <span
+                    id="paso1"
+                    class="paso activo">
+
+                    1. FIGURA
+
+                </span>
+
+                <span
+                    id="paso2"
+                    class="paso">
+
+                    2. COLOR
+
+                </span>
+
+                <span
+                    id="paso3"
+                    class="paso">
+
+                    3. LISTO
+
+                </span>
+
+            </div>
+
+
+            <div
+                id="ayudaCentral"
+                class="ayuda">
+
+                Paso 1: selecciona una figura.
+
+            </div>
+
+        </section>
+
+
+        <!-- ======================================================
+             PANEL COLORES
+             ====================================================== -->
+
+        <aside class="panel">
+
+            <h2>🎨 COLORES</h2>
+
+            <p>
+                Pulsa el botón para ver todos los colores.
+            </p>
+
+            <button
+                class="boton-categoria"
+                onclick="AbrirColores()">
+
+                🎨<br>
+                ELEGIR<br>
+                COLOR
+
+            </button>
+
+            <div class="seleccion-info">
+
+                Selección:
+
+                <div
+                    id="textoColorElegido">
+
+                    Ninguno
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+    </section>
+
+
+    <!-- ==========================================================
+         COLECCIÓN
+         ----------------------------------------------------------
+         Esta zona NO tiene un límite.
+         Cada creación se agrega debajo de la anterior.
+         ============================================================== -->
+
+    <section class="coleccion">
+
+        <h2>🏆 Mi colección de creaciones</h2>
+
+        <p class="coleccion-descripcion">
+
+            Aquí aparecerá todo lo que hayas completado durante
+            esta partida.
+
+        </p>
+
+        <div
+            id="galeria"
+            class="galeria">
+
+            <!-- Las creaciones aparecen aquí. -->
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<!-- ============================================================
+     FIN DEL HTML / INICIO DEL JAVASCRIPT
+     ============================================================ -->
+
+<script>
+
+/* ==============================================================
+   ==============================================================
+   DATOS DEL JUEGO
+   ==============================================================
+   ============================================================== */
+
+
+/* ==============================================================
+   FIGURAS DISPONIBLES
+   --------------------------------------------------------------
+   Hay muchas más que las tres figuras originales.
+
+   Cada figura tiene:
+   - clave interna
+   - nombre visible
+   - tipo visual
+
+   Puedes agregar más posteriormente.
+   ============================================================== */
+
+const figuras = [
+
+    {
+        clave:"circulo",
+        nombre:"Círculo",
+        tipo:"circle"
+    },
+
+    {
+        clave:"cuadrado",
+        nombre:"Cuadrado",
+        tipo:"rect"
+    },
+
+    {
+        clave:"triangulo",
+        nombre:"Triángulo",
+        tipo:"polygon"
+    },
+
+    {
+        clave:"rectangulo",
+        nombre:"Rectángulo",
+        tipo:"rectangulo"
+    },
+
+    {
+        clave:"ovalo",
+        nombre:"Óvalo",
+        tipo:"ovalo"
+    },
+
+    {
+        clave:"rombo",
+        nombre:"Rombo",
+        tipo:"rombo"
+    },
+
+    {
+        clave:"estrella",
+        nombre:"Estrella",
+        tipo:"estrella"
+    },
+
+    {
+        clave:"corazon",
+        nombre:"Corazón",
+        tipo:"corazon"
+    },
+
+    {
+        clave:"pentagono",
+        nombre:"Pentágono",
+        tipo:"pentagono"
+    },
+
+    {
+        clave:"hexagono",
+        nombre:"Hexágono",
+        tipo:"hexagono"
+    },
+
+    {
+        clave:"trapezoide",
+        nombre:"Trapezoide",
+        tipo:"trapezoide"
+    },
+
+    {
+        clave:"octagono",
+        nombre:"Octágono",
+        tipo:"octagono"
+    }
+
+];
+
+
+/* ==============================================================
+   COLORES DISPONIBLES
+   --------------------------------------------------------------
+   Cada color tiene una ruta de imagen.
+
+   ESTAS RUTAS SON LAS QUE DEBES CAMBIAR POR TUS PNG.
+
+   Ejemplo para Sonic:
+   ../Imágenes/Colores/SonicAzul.png
+
+   Puedes poner la cara de Sonic, Tails, Knuckles, etc.
+   según el color que quieras representar.
+   ============================================================== */
+
+const colores = [
+
+    {
+        clave:"azul",
+        nombre:"Azul",
+        codigo:"#1159ea",
+        imagen:"../Imágenes/Cara de Sonic.png"
+    },
+
+    {
+        clave:"rojo",
+        nombre:"Rojo",
+        codigo:"#F40000",
+        imagen:"../Imágenes/Cara de Knuckles.png"
+    },
+
+    {
+        clave:"amarillo",
+        nombre:"Amarillo",
+        codigo:"#ffd23f",
+        imagen:"../Imágenes/Cara de Tails.png"
+    },
+
+    {
+        clave:"verde",
+        nombre:"Verde",
+        codigo:"#70d66c",
+        imagen:"../Imágenes/Colores/SonicVerde.png"
+    },
+
+    {
+        clave:"morado",
+        nombre:"Morado",
+        codigo:"#E1B8F0",
+        imagen:"../Imágenes/Cara de Blaze.png"
+    },
+
+    {
+        clave:"rosa",
+        nombre:"Rosa",
+        codigo:"#FD95C6",
+        imagen:"../Imágenes/Cara de Amy Rose.png"
+    },
+
+    {
+        clave:"naranja",
+        nombre:"Naranja",
+        codigo:"#ff9b52",
+        imagen:"../Imágenes/Colores/SonicNaranja.png"
+    },
+
+    {
+        clave:"turquesa",
+        nombre:"Turquesa",
+        codigo:"#43d8c0",
+        imagen:"../Imágenes/Colores/SonicTurquesa.png"
+    },
+
+    {
+        clave:"celeste",
+        nombre:"Celeste",
+        codigo:"#74cfff",
+        imagen:"../Imágenes/Colores/SonicCeleste.png"
+    },
+
+    {
+        clave:"blanco",
+        nombre:"Blanco",
+        codigo:"#f4f8fb",
+        imagen:"../Imágenes/Colores/SonicBlanco.png"
+    },
+
+    {
+        clave:"negro",
+        nombre:"Negro",
+        codigo:"#303744",
+        imagen:"../Imágenes/Colores/SonicNegro.png"
+    },
+
+    {
+        clave:"dorado",
+        nombre:"Dorado",
+        codigo:"#e6b93d",
+        imagen:"../Imágenes/Colores/SonicDorado.png"
+    }
+
+];
+
+
+/* ==============================================================
+   MÚSICA DE FONDO
+   --------------------------------------------------------------
+   Igual que en el laberinto:
+
+   1. El primer tema se escoge al azar.
+   2. No se repite inmediatamente el anterior.
+   3. Cuando termina una canción, comienza otra al azar.
+   4. Si un archivo no existe, intenta otra canción.
+   5. Puedes agregar muchas canciones a esta lista.
+
+   IMPORTANTE:
+   La ruta debe coincidir exactamente con el nombre del archivo.
+   ============================================================== */
+
+const canciones = [
+
+    {
+        archivo:"../Música/Dreams of an Absolution (relax).mp3",
+        nombre:"Dreams of an Absolution (relax)"
+    },
+
+    {
+        archivo:"../Música/Chao Garden (relax).mp3",
+        nombre:"Chao Garden (relax)"
+    },
+
+    {
+        archivo:"../Música/Escape From The City (relax).mp3",
+        nombre:"Escape From The City (relax)"
+    },
+
+    {
+        archivo:"../Música/Reach For The Stars (relax).mp3",
+        nombre:"Reach For The Stars (relax)"
+    },
+
+    {
+        archivo:"../Música/Fist Bump (relax).mp3",
+        nombre:"Fist Bump (relax)"
+    },
+
+    {
+        archivo:"../Música/Friends (relax).mp3",
+        nombre:"Friends (relax)"
+    },
+
+    {
+        archivo:"../Música/Green Hill Zone (relax).mp3",
+        nombre:"Green Hill Zone (relax)"
+    },
+
+    {
+        archivo:"../Música/Open Your Heart (relax).mp3",
+        nombre:"Open Your Heart (relax)"
+    },
+    
+    {
+        archivo:"../Música/Fishing Vibes (relax).mp3",
+        nombre:"Fishing Vibes (relax)"
+    }
+];
+
+
+/* ==============================================================
+   VARIABLES DEL JUEGO
+   ============================================================== */
+
+let formaCorrecta = "";
+
+let colorCorrecto = "";
+
+let formaElegida = "";
+
+let colorElegido = "";
+
+let juegoIniciado = false;
+
+
+/* Guarda la posición de la última canción utilizada. */
+
+let ultimaCancion = -1;
+
+
+/* ==============================================================
+   INICIAR JUEGO
+   --------------------------------------------------------------
+   La interacción del botón permite que Chrome autorice el audio.
+   ============================================================== */
+
+function IniciarJuego(){
+
+    juegoIniciado = true;
+
+    document
+        .getElementById("bienvenida")
+        .classList
+        .add("oculto");
+
+
+    /* Crea la primera receta aleatoria. */
+
+    NuevaReceta();
+
+
+    /* Inicia la música. */
+
+    ReproducirMusica();
+
+
+    MostrarInstruccion(
+        "👀 Observa la receta y comienza por la FIGURA."
+    );
+
+}
+
+
+/* ==============================================================
+   MÚSICA: REPRODUCIR UNA CANCIÓN ALEATORIA
+   ============================================================== */
+
+function ReproducirMusica(){
+
+    const audio =
+        document.getElementById("musicaFondo");
+
+
+    if(canciones.length === 0){
+
+        return;
+
+    }
+
+
+    let siguiente;
+
+
+    /* ==========================================================
+       Elegimos una canción diferente a la anterior.
+       Si solo existe una, se puede repetir.
+       ========================================================== */
+
+    do{
+
+        siguiente =
+            Math.floor(
+                Math.random() * canciones.length
+            );
+
+    }while(
+        canciones.length > 1 &&
+        siguiente === ultimaCancion
+    );
+
+
+    ultimaCancion = siguiente;
+
+
+    audio.src =
+        canciones[siguiente].archivo;
+
+
+    audio.volume = .22;
+
+
+    audio.load();
+
+
+    audio.play().catch(function(){
+
+        /* Si Chrome todavía bloquea el audio,
+           no detenemos el juego. */
+
+    });
+
+}
+
+
+/* ==============================================================
+   SI UNA CANCIÓN FALLA
+   --------------------------------------------------------------
+   No vuelve obligatoriamente a la primera.
+   Prueba otra canción.
+   ============================================================== */
+
+document
+    .getElementById("musicaFondo")
+    .addEventListener(
+        "error",
+        function(){
+
+            if(!juegoIniciado){
+
+                return;
+
+            }
+
+            ReproducirMusica();
+
+        }
+    );
+
+
+/* ==============================================================
+   CUANDO TERMINA UNA CANCIÓN
+   --------------------------------------------------------------
+   Comienza otra automáticamente.
+   ============================================================== */
+
+document
+    .getElementById("musicaFondo")
+    .addEventListener(
+        "ended",
+        function(){
+
+            ReproducirMusica();
+
+        }
+    );
+
+
+/* ==============================================================
+   CREAR NUEVA RECETA
+   --------------------------------------------------------------
+   Esta es la parte que hace que el juego sea INFINITO.
+
+   Cada vez que se completa una creación:
+   - se genera una forma al azar
+   - se genera un color al azar
+   - se crea una nueva receta
+
+   No existe un último nivel.
+   ============================================================== */
+
+function NuevaReceta(){
+
+    formaElegida = "";
+
+    colorElegido = "";
+
+
+    /* ==========================================================
+       Elegimos una figura al azar.
+       ========================================================== */
+
+    const indiceForma =
+        Math.floor(
+            Math.random() * figuras.length
+        );
+
+
+    formaCorrecta =
+        figuras[indiceForma].clave;
+
+
+    /* ==========================================================
+       Elegimos un color al azar.
+       ========================================================== */
+
+    const indiceColor =
+        Math.floor(
+            Math.random() * colores.length
+        );
+
+
+    colorCorrecto =
+        colores[indiceColor].clave;
+
+
+    /* Actualizamos la receta. */
+
+    ActualizarReceta();
+
+
+    /* Limpiamos la máquina. */
+
+    LimpiarSeleccion();
+
+
+    /* Actualizamos los pasos. */
+
+    ActivarPaso(1);
+
+}
+
+
+/* ==============================================================
+   ACTUALIZAR RECETA EN PANTALLA
+   ============================================================== */
+
+function ActualizarReceta(){
+
+    const forma =
+        BuscarFigura(formaCorrecta);
+
+    const color =
+        BuscarColor(colorCorrecto);
+
+
+    document
+        .getElementById("recetaDato")
+        .textContent =
+        forma.nombre +
+        " + " +
+        color.nombre;
+
+}
+
+
+/* ==============================================================
+   ABRIR VENTANA DE FIGURAS
+   ============================================================== */
+
+function AbrirFiguras(){
+
+    if(!juegoIniciado){
+
+        return;
+
+    }
+
+
+    document
+        .getElementById("modalFiguras")
+        .classList
+        .remove("oculto");
+
+}
+
+
+/* ==============================================================
+   ABRIR VENTANA DE COLORES
+   ============================================================== */
+
+function AbrirColores(){
+
+    if(!juegoIniciado){
+
+        return;
+
+    }
+
+
+    document
+        .getElementById("modalColores")
+        .classList
+        .remove("oculto");
+
+}
+
+
+/* ==============================================================
+   CERRAR MODAL
+   ============================================================== */
+
+function CerrarModal(id){
+
+    document
+        .getElementById(id)
+        .classList
+        .add("oculto");
+
+}
+
+
+/* ==============================================================
+   CREAR LOS BOTONES DE FIGURAS
+   ============================================================== */
+
+function ConstruirOpcionesFiguras(){
+
+    const contenedor =
+        document.getElementById("gridFiguras");
+
+
+    contenedor.innerHTML = "";
+
+
+    figuras.forEach(
+        function(figura){
+
+            const boton =
+                document.createElement("button");
+
+
+            boton.className = "opcion";
+
+
+            boton.setAttribute(
+                "data-forma",
+                figura.clave
+            );
+
+
+            /* Crea la mini representación visual. */
+
+            boton.appendChild(
+                CrearMiniFigura(figura.clave)
+            );
+
+
+            const texto =
+                document.createElement("span");
+
+
+            texto.textContent =
+                figura.nombre;
+
+
+            boton.appendChild(texto);
+
+
+            boton.onclick =
+                function(){
+
+                    SeleccionarForma(
+                        figura.clave
+                    );
+
+                };
+
+
+            contenedor.appendChild(
+                boton
+            );
+
+        }
+    );
+
+}
+
+
+/* ==============================================================
+   CREAR LOS BOTONES DE COLORES
+   ============================================================== */
+
+function ConstruirOpcionesColores(){
+
+    const contenedor =
+        document.getElementById("gridColores");
+
+
+    contenedor.innerHTML = "";
+
+
+    colores.forEach(
+        function(color){
+
+            const boton =
+                document.createElement("button");
+
+
+            boton.className = "opcion";
+
+
+            boton.setAttribute(
+                "data-color",
+                color.clave
+            );
+
+
+            /* ==================================================
+               CONTENEDOR DE LA IMAGEN
+               ================================================== */
+
+            const espacio =
+                document.createElement("div");
+
+
+            espacio.className =
+                "imagen-opcion";
+
+
+            /* El color siempre queda visible como fondo.
+               Si después colocas un PNG transparente de Sonic,
+               el personaje aparecerá encima del color. */
+
+            espacio.style.backgroundColor =
+                color.codigo;
+
+
+            const imagen =
+                document.createElement("img");
+
+
+            imagen.src =
+                color.imagen;
+
+
+            imagen.alt =
+                color.nombre;
+
+
+            /* ==================================================
+               Si todavía no existe el PNG,
+               dejamos visible el espacio.
+               ================================================== */
+
+            imagen.onerror =
+                function(){
+
+                    /* Si falta el PNG, se conserva el color visible
+                       y se evita el icono de imagen rota. */
+                    this.remove();
+
+                };
+
+
+            espacio.appendChild(
+                imagen
+            );
+
+
+            boton.appendChild(
+                espacio
+            );
+
+
+            /* Nombre del color. */
+
+            const texto =
+                document.createElement("span");
+
+
+            texto.textContent =
+                color.nombre;
+
+
+            boton.appendChild(
+                texto
+            );
+
+
+            boton.onclick =
+                function(){
+
+                    SeleccionarColor(
+                        color.clave
+                    );
+
+                };
+
+
+            contenedor.appendChild(
+                boton
+            );
+
+        }
+    );
+
+}
+
+
+/* ==============================================================
+   SELECCIONAR FIGURA
+   ============================================================== */
+
+function SeleccionarForma(forma){
+
+    if(!juegoIniciado){
+
+        return;
+
+    }
+
+
+    formaElegida = forma;
+
+
+    /* Marca el botón visualmente. */
+
+    document
+        .querySelectorAll(
+            "#gridFiguras .opcion"
+        )
+        .forEach(
+            function(boton){
+
+                boton.classList.remove(
+                    "seleccionada"
+                );
+
+
+                if(
+                    boton.dataset.forma ===
+                    forma
+                ){
+
+                    boton.classList.add(
+                        "seleccionada"
+                    );
+
+                }
+
+            }
+        );
+
+
+    /* Actualiza el texto lateral. */
+
+    document
+        .getElementById(
+            "textoFormaElegida"
+        )
+        .textContent =
+        BuscarFigura(forma).nombre;
+
+
+    /* Muestra la figura central. */
+
+    MostrarFigura(forma);
+
+
+    /* Cerramos la ventana. */
+
+    CerrarModal(
+        "modalFiguras"
+    );
+
+
+    /* ==========================================================
+       Comprobamos si coincide con la receta.
+       ========================================================== */
+
+    if(forma === formaCorrecta){
+
+        ActivarPaso(2);
+
+
+        MostrarInstruccion(
+            "✅ ¡Muy bien! Ahora elige el COLOR indicado."
+        );
+
+
+        document
+            .getElementById(
+                "ayudaCentral"
+            )
+            .textContent =
+            "Paso 2: selecciona el color de la receta.";
+
+    }else{
+
+        MostrarInstruccion(
+            "🌱 Esa figura es diferente. Mira nuevamente la receta y prueba otra."
+        );
+
+    }
+
+    /* Si el color ya estaba elegido y ahora la figura también
+       es correcta, completamos sin obligar a elegir de nuevo. */
+
+    if(
+        formaElegida === formaCorrecta &&
+        colorElegido === colorCorrecto
+    ){
+
+        ActivarPaso(3);
+
+        AplicarColor(colorElegido);
+
+        MostrarInstruccion(
+            "🌟 ¡Perfecto! La receta está completa."
+        );
+
+        document
+            .getElementById("ayudaCentral")
+            .textContent =
+            "¡Creación terminada!";
+
+        setTimeout(
+            CompletarCreacion,
+            550
+        );
+
+    }
+
+}
+
+
+/* ==============================================================
+   SELECCIONAR COLOR
+   ============================================================== */
+
+function SeleccionarColor(color){
+
+    if(!juegoIniciado){
+
+        return;
+
+    }
+
+
+    colorElegido = color;
+
+
+    /* Marca el botón seleccionado. */
+
+    document
+        .querySelectorAll(
+            "#gridColores .opcion"
+        )
+        .forEach(
+            function(boton){
+
+                boton.classList.remove(
+                    "seleccionada"
+                );
+
+
+                if(
+                    boton.dataset.color ===
+                    color
+                ){
+
+                    boton.classList.add(
+                        "seleccionada"
+                    );
+
+                }
+
+            }
+        );
+
+
+    /* Actualiza el texto lateral. */
+
+    document
+        .getElementById(
+            "textoColorElegido"
+        )
+        .textContent =
+        BuscarColor(color).nombre;
+
+
+    /* Muestra la imagen correspondiente. */
+
+    MostrarImagenColor(
+        color
+    );
+
+
+    /* ==========================================================
+       El color seleccionado SIEMPRE se muestra en la figura.
+       ----------------------------------------------------------
+       Aunque sea incorrecto para la receta, el niño puede ver
+       inmediatamente qué color eligió. La comprobación de si
+       acertó o no se mantiene más abajo.
+       ========================================================== */
+
+    if(formaElegida){
+
+        AplicarColor(
+            color
+        );
+
+    }
+
+
+    /* Cerramos el modal. */
+
+    CerrarModal(
+        "modalColores"
+    );
+
+
+    /* ==========================================================
+       Si la forma no es correcta, el color no puede completar
+       la receta todavía.
+       ========================================================== */
+
+    if(formaElegida !== formaCorrecta){
+
+        MostrarInstruccion(
+            "👀 Primero completa la FORMA indicada en la receta."
+        );
+
+        return;
+
+    }
+
+
+    /* ==========================================================
+       Si la forma está correcta, comprobamos el color.
+       ========================================================== */
+
+    if(color === colorCorrecto){
+
+        ActivarPaso(3);
+
+
+        AplicarColor(
+            color
+        );
+
+
+        MostrarInstruccion(
+            "🌟 ¡Perfecto! La receta está completa."
+        );
+
+
+        document
+            .getElementById(
+                "ayudaCentral"
+            )
+            .textContent =
+            "¡Creación terminada!";
+
+
+        setTimeout(
+            CompletarCreacion,
+            550
+        );
+
+    }else{
+
+        MostrarInstruccion(
+            "🌱 Ese color es diferente. Puedes probar otro con calma."
+        );
+
+    }
+
+}
+
+
+/* ==============================================================
+   MOSTRAR FIGURA
+   ============================================================== */
+
+function MostrarFigura(forma){
+
+    /* Ajustamos el tamaño del PNG a la silueta actual. */
+    AjustarTamanoPersonaje(forma);
+
+    const svg =
+        document.getElementById(
+            "figuraSVG"
+        );
+
+
+    svg.innerHTML = "";
+
+
+    const colorBase =
+        "#d6e1ea";
+
+
+    let elemento;
+
+
+    /* ==========================================================
+       CÍRCULO
+       ========================================================== */
+
+    if(forma === "circulo"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "circle"
+            );
+
+        elemento.setAttribute(
+            "cx",
+            "100"
+        );
+
+        elemento.setAttribute(
+            "cy",
+            "100"
+        );
+
+        elemento.setAttribute(
+            "r",
+            "70"
+        );
+
+    }
+
+
+    /* ==========================================================
+       CUADRADO
+       ========================================================== */
+
+    if(forma === "cuadrado"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "rect"
+            );
+
+        elemento.setAttribute(
+            "x",
+            "30"
+        );
+
+        elemento.setAttribute(
+            "y",
+            "30"
+        );
+
+        elemento.setAttribute(
+            "width",
+            "140"
+        );
+
+        elemento.setAttribute(
+            "height",
+            "140"
+        );
+
+        elemento.setAttribute(
+            "rx",
+            "12"
+        );
+
+    }
+
+
+    /* ==========================================================
+       TRIÁNGULO
+       ========================================================== */
+
+    if(forma === "triangulo"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            "100,25 182,165 18,165"
+        );
+
+    }
+
+
+    /* ==========================================================
+       RECTÁNGULO
+       ========================================================== */
+
+    if(forma === "rectangulo"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "rect"
+            );
+
+        elemento.setAttribute(
+            "x",
+            "20"
+        );
+
+        elemento.setAttribute(
+            "y",
+            "55"
+        );
+
+        elemento.setAttribute(
+            "width",
+            "160"
+        );
+
+        elemento.setAttribute(
+            "height",
+            "90"
+        );
+
+        elemento.setAttribute(
+            "rx",
+            "12"
+        );
+
+    }
+
+
+    /* ==========================================================
+       ÓVALO
+       ========================================================== */
+
+    if(forma === "ovalo"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "ellipse"
+            );
+
+        elemento.setAttribute(
+            "cx",
+            "100"
+        );
+
+        elemento.setAttribute(
+            "cy",
+            "100"
+        );
+
+        elemento.setAttribute(
+            "rx",
+            "80"
+        );
+
+        elemento.setAttribute(
+            "ry",
+            "55"
+        );
+
+    }
+
+
+    /* ==========================================================
+       ROMBO
+       ========================================================== */
+
+    if(forma === "rombo"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            "100,18 180,100 100,182 20,100"
+        );
+
+    }
+
+
+    /* ==========================================================
+       ESTRELLA
+       ============================================================== */
+
+    if(forma === "estrella"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            CrearPuntosEstrella()
+        );
+
+    }
+
+
+    /* ==========================================================
+       CORAZÓN
+       ============================================================== */
+
+    if(forma === "corazon"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "path"
+            );
+
+        elemento.setAttribute(
+            "d",
+            "M100 175 C80 155 25 125 25 72 C25 35 72 25 100 58 C128 25 175 35 175 72 C175 125 120 155 100 175 Z"
+        );
+
+    }
+
+
+    /* ==========================================================
+       PENTÁGONO
+       ============================================================== */
+
+    if(forma === "pentagono"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            CrearPuntosPoligono(5,82)
+        );
+
+    }
+
+
+    /* ==========================================================
+       HEXÁGONO
+       ============================================================== */
+
+    if(forma === "hexagono"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            CrearPuntosPoligono(6,82)
+        );
+
+    }
+
+
+    /* ==========================================================
+       TRAPEZOIDE
+       ============================================================== */
+
+    if(forma === "trapezoide"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            "45,30 155,30 180,170 20,170"
+        );
+
+    }
+
+
+    /* ==========================================================
+       OCTÁGONO
+       ============================================================== */
+
+    if(forma === "octagono"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            CrearPuntosPoligono(8,82)
+        );
+
+    }
+
+
+    /* ==========================================================
+       Configuración común.
+       ============================================================== */
+
+    if(elemento){
+
+        elemento.setAttribute(
+            "fill",
+            colorBase
+        );
+
+        elemento.setAttribute(
+            "stroke",
+            "#ffffff"
+        );
+
+        elemento.setAttribute(
+            "stroke-width",
+            "3"
+        );
+
+        elemento.classList.add(
+            "animar"
+        );
+
+
+        svg.appendChild(
+            elemento
+        );
+
+    }
+
+
+    /* ==========================================================
+       IMPORTANTE:
+       Si el usuario ya había elegido un color, NO lo borramos
+       al cambiar la figura. La nueva figura conserva el color
+       que ya estaba seleccionado.
+       ============================================================== */
+
+    if(colorElegido){
+
+        AplicarColor(
+            colorElegido
+        );
+
+    }else{
+
+        document
+            .getElementById(
+                "resultadoTexto"
+            )
+            .textContent =
+            BuscarFigura(forma).nombre;
+
+    }
+
+}
+
+
+/* ==============================================================
+   APLICAR COLOR
+   ============================================================== */
+
+function AplicarColor(color){
+
+    const svg =
+        document.getElementById(
+            "figuraSVG"
+        );
+
+
+    const figura =
+        svg.firstElementChild;
+
+
+    if(!figura){
+
+        return;
+
+    }
+
+
+    figura.setAttribute(
+        "fill",
+        BuscarColor(color).codigo
+    );
+
+
+    figura.classList.remove(
+        "animar"
+    );
+
+
+    void figura.offsetWidth;
+
+
+    figura.classList.add(
+        "animar"
+    );
+
+
+    figura.style.filter =
+        "none";
+
+
+    document
+        .getElementById(
+            "resultadoTexto"
+        )
+        .textContent =
+        BuscarFigura(formaElegida).nombre +
+        " " +
+        BuscarColor(color).nombre;
+
+}
+
+
+/* ==============================================================
+   AJUSTAR LA CARA DEL PERSONAJE A LA FIGURA
+   --------------------------------------------------------------
+   La imagen crece para aprovechar el espacio disponible, pero
+   se recorta siguiendo la silueta de la figura para evitar que
+   la cara sobresalga de sus bordes.
+   ============================================================== */
+
+function AjustarImagenAPosicionDeFigura(imagen, forma){
+
+    /*
+       IMPORTANTE:
+       La imagen PNG del personaje se mantiene completa.
+       No se aplica clip-path porque eso cortaba partes de la cara.
+       El tamaño se controla desde AjustarTamanoPersonaje().
+    */
+
+    imagen.style.objectFit = "contain";
+
+    imagen.style.clipPath = "none";
+
+    imagen.style.webkitClipPath = "none";
+
+}
+
+
+/* ==============================================================
+   MOSTRAR IMAGEN DEL COLOR
+   ============================================================== */
+
+function MostrarImagenColor(color){
+
+    const dato =
+        BuscarColor(color);
+
+
+    const imagen =
+        document.getElementById(
+            "imagenColorResultado"
+        );
+
+
+    imagen.src =
+        dato.imagen;
+
+
+    imagen.alt =
+        dato.nombre;
+
+
+    /* La cara se mantiene centrada y recortada dentro de la
+       silueta actual. Si todavía no hay figura, se muestra normal. */
+
+    if(formaElegida){
+
+        AjustarImagenAPosicionDeFigura(
+            imagen,
+            formaElegida
+        );
+
+    }
+
+
+    /* El color ya está aplicado a la figura SVG.
+       El PNG solamente se coloca encima y conserva su transparencia. */
+
+    imagen.style.backgroundColor =
+        "transparent";
+
+
+    /* ==========================================================
+       Si no existe la imagen, dejamos el espacio disponible
+       sin mostrar el típico icono de imagen rota.
+       ============================================================== */
+
+    imagen.onerror =
+        function(){
+
+            /* Si todavía no existe el PNG, dejamos solamente
+               el color de fondo, sin mostrar una imagen rota. */
+
+            this.removeAttribute(
+                "src"
+            );
+
+            this.style.backgroundColor =
+                "transparent";
+
+        };
+
+}
+
+
+/* ==============================================================
+   COMPLETAR CREACIÓN
+   --------------------------------------------------------------
+   Aquí se guarda la creación en la colección.
+   Después se muestra el mensaje de éxito.
+   ============================================================== */
+
+function CompletarCreacion(){
+
+    AgregarColeccion();
+
+
+    CrearEstrellas();
+
+
+    CrearResultadoExito();
+
+
+    document
+        .getElementById(
+            "modalExito"
+        )
+        .classList
+        .remove("oculto");
+
+}
+
+
+/* ==============================================================
+   CREAR EL RESULTADO DEL MODAL DE ÉXITO
+   --------------------------------------------------------------
+   Muestra:
+   - figura
+   - nombre de figura
+   - color
+   - imagen del color
+   ============================================================== */
+
+function CrearResultadoExito(){
+
+    const contenedor =
+        document.getElementById(
+            "resultadoExito"
+        );
+
+    contenedor.innerHTML = "";
+
+    /* ==========================================================
+       Creamos UN SOLO resultado visual.
+       La figura es el fondo y el PNG del personaje queda encima.
+       Ya no se crean dos figuras separadas.
+       ========================================================== */
+
+    const combinado =
+        document.createElement("div");
+
+    combinado.className =
+        "resultado-combinado";
+
+    combinado.style.backgroundColor =
+        "transparent";
+
+    const svg =
+        CrearSVGDeCreacion(
+            formaCorrecta,
+            colorCorrecto
+        );
+
+    combinado.appendChild(svg);
+
+    const imagen =
+        document.createElement("img");
+
+    imagen.src =
+        BuscarColor(colorCorrecto).imagen;
+
+    imagen.alt =
+        BuscarColor(colorCorrecto).nombre;
+
+    AjustarImagenAPosicionDeFigura(
+        imagen,
+        formaCorrecta
+    );
+
+    imagen.onerror =
+        function(){
+
+            /* Si no hay PNG, solamente permanece la figura coloreada. */
+
+            this.remove();
+
+        };
+
+    combinado.appendChild(imagen);
+
+    contenedor.appendChild(combinado);
+
+    const texto =
+        document.createElement("strong");
+
+    texto.textContent =
+        BuscarFigura(formaCorrecta).nombre +
+        " + " +
+        BuscarColor(colorCorrecto).nombre;
+
+    contenedor.appendChild(texto);
+
+}
+
+/* ==============================================================
+   AGREGAR A LA COLECCIÓN
+   --------------------------------------------------------------
+   No existe un máximo.
+   Cada vez que se completa una receta se agrega una nueva tarjeta.
+   ============================================================== */
+
+function AgregarColeccion(){
+
+    const galeria =
+        document.getElementById(
+            "galeria"
+        );
+
+    const tarjeta =
+        document.createElement(
+            "div"
+        );
+
+    tarjeta.className =
+        "creacion";
+
+    /* ==========================================================
+       Creamos una sola composición:
+       figura coloreada + PNG del personaje encima.
+       ========================================================== */
+
+    const visual =
+        document.createElement("div");
+
+    visual.className =
+        "creacion-visual";
+
+    const svg =
+        CrearSVGDeCreacion(
+            formaCorrecta,
+            colorCorrecto
+        );
+
+    visual.appendChild(svg);
+
+    const imagen =
+        document.createElement("img");
+
+    imagen.src =
+        BuscarColor(colorCorrecto).imagen;
+
+    imagen.alt =
+        BuscarColor(colorCorrecto).nombre;
+
+    AjustarImagenAPosicionDeFigura(
+        imagen,
+        formaCorrecta
+    );
+
+    imagen.onerror =
+        function(){
+
+            /* Si no existe el PNG, queda solamente la figura. */
+
+            this.remove();
+
+        };
+
+    visual.appendChild(imagen);
+
+    tarjeta.appendChild(visual);
+
+    const nombre =
+        document.createElement("div");
+
+    nombre.className =
+        "creacion-nombre";
+
+    nombre.innerHTML =
+        BuscarFigura(formaCorrecta).nombre +
+        "<br>" +
+        BuscarColor(colorCorrecto).nombre;
+
+    tarjeta.appendChild(nombre);
+
+    galeria.appendChild(tarjeta);
+
+}
+
+/* ==============================================================
+   CREAR SVG PARA LA COLECCIÓN
+   ============================================================== */
+
+function CrearSVGDeCreacion(
+    forma,
+    color
+){
+
+    const svg =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg"
+        );
+
+
+    svg.setAttribute(
+        "viewBox",
+        "0 0 200 200"
+    );
+
+
+    let elemento;
+
+
+    /* Círculo. */
+
+    if(forma === "circulo"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "circle"
+            );
+
+        elemento.setAttribute(
+            "cx",
+            "100"
+        );
+
+        elemento.setAttribute(
+            "cy",
+            "100"
+        );
+
+        elemento.setAttribute(
+            "r",
+            "70"
+        );
+
+    }
+
+
+    /* Cuadrado. */
+
+    if(forma === "cuadrado"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "rect"
+            );
+
+        elemento.setAttribute(
+            "x",
+            "30"
+        );
+
+        elemento.setAttribute(
+            "y",
+            "30"
+        );
+
+        elemento.setAttribute(
+            "width",
+            "140"
+        );
+
+        elemento.setAttribute(
+            "height",
+            "140"
+        );
+
+        elemento.setAttribute(
+            "rx",
+            "12"
+        );
+
+    }
+
+
+    /* Triángulo. */
+
+    if(forma === "triangulo"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            "100,25 182,165 18,165"
+        );
+
+    }
+
+
+    /* Rectángulo. */
+
+    if(forma === "rectangulo"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "rect"
+            );
+
+        elemento.setAttribute(
+            "x",
+            "20"
+        );
+
+        elemento.setAttribute(
+            "y",
+            "55"
+        );
+
+        elemento.setAttribute(
+            "width",
+            "160"
+        );
+
+        elemento.setAttribute(
+            "height",
+            "90"
+        );
+
+        elemento.setAttribute(
+            "rx",
+            "12"
+        );
+
+    }
+
+
+    /* Óvalo. */
+
+    if(forma === "ovalo"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "ellipse"
+            );
+
+        elemento.setAttribute(
+            "cx",
+            "100"
+        );
+
+        elemento.setAttribute(
+            "cy",
+            "100"
+        );
+
+        elemento.setAttribute(
+            "rx",
+            "80"
+        );
+
+        elemento.setAttribute(
+            "ry",
+            "55"
+        );
+
+    }
+
+
+    /* Rombo. */
+
+    if(forma === "rombo"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            "100,18 180,100 100,182 20,100"
+        );
+
+    }
+
+
+    /* Estrella. */
+
+    if(forma === "estrella"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            CrearPuntosEstrella()
+        );
+
+    }
+
+
+    /* Corazón. */
+
+    if(forma === "corazon"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "path"
+            );
+
+        elemento.setAttribute(
+            "d",
+            "M100 175 C80 155 25 125 25 72 C25 35 72 25 100 58 C128 25 175 35 175 72 C175 125 120 155 100 175 Z"
+        );
+
+    }
+
+
+    /* Pentágono. */
+
+    if(forma === "pentagono"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            CrearPuntosPoligono(5,82)
+        );
+
+    }
+
+
+    /* Hexágono. */
+
+    if(forma === "hexagono"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            CrearPuntosPoligono(6,82)
+        );
+
+    }
+
+
+    /* Trapezoide. */
+
+    if(forma === "trapezoide"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            "45,30 155,30 180,170 20,170"
+        );
+
+    }
+
+
+    /* Octágono. */
+
+    if(forma === "octagono"){
+
+        elemento =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "polygon"
+            );
+
+        elemento.setAttribute(
+            "points",
+            CrearPuntosPoligono(8,82)
+        );
+
+    }
+
+
+    if(elemento){
+
+        elemento.setAttribute(
+            "fill",
+            BuscarColor(color).codigo
+        );
+
+        elemento.setAttribute(
+            "stroke",
+            "#ffffff"
+        );
+
+        elemento.setAttribute(
+            "stroke-width",
+            "3"
+        );
+
+        svg.appendChild(
+            elemento
+        );
+
+    }
+
+
+    return svg;
+
+}
+
+
+/* ==============================================================
+   CREAR PUNTOS DE UNA ESTRELLA
+   ============================================================== */
+
+function CrearPuntosEstrella(){
+
+    const puntos = [];
+
+    const centroX = 100;
+
+    const centroY = 100;
+
+    const radioExterior = 78;
+
+    /*
+       Dejamos el centro más amplio para que el personaje no quede
+       atravesado visualmente por las puntas de la estrella.
+    */
+    const radioInterior = 54;
+
+
+    for(
+        let i = 0;
+        i < 10;
+        i++
+    ){
+
+        const angulo =
+            -Math.PI / 2 +
+            i * Math.PI / 5;
+
+
+        const radio =
+            i % 2 === 0
+            ? radioExterior
+            : radioInterior;
+
+
+        const x =
+            centroX +
+            Math.cos(angulo) * radio;
+
+
+        const y =
+            centroY +
+            Math.sin(angulo) * radio;
+
+
+        puntos.push(
+            x + "," + y
+        );
+
+    }
+
+
+    return puntos.join(" ");
+
+}
+
+
+/* ==============================================================
+   CREAR POLÍGONOS REGULARES
+   ============================================================== */
+
+function CrearPuntosPoligono(
+    cantidad,
+    radio
+){
+
+    const puntos = [];
+
+
+    for(
+        let i = 0;
+        i < cantidad;
+        i++
+    ){
+
+        const angulo =
+            -Math.PI / 2 +
+            i * (2 * Math.PI / cantidad);
+
+
+        const x =
+            100 +
+            Math.cos(angulo) * radio;
+
+
+        const y =
+            100 +
+            Math.sin(angulo) * radio;
+
+
+        puntos.push(
+            x + "," + y
+        );
+
+    }
+
+
+    return puntos.join(" ");
+
+}
+
+
+/* ==============================================================
+   CREAR MINI FIGURA PARA EL MENÚ
+   ============================================================== */
+
+function CrearMiniFigura(forma){
+
+    const elemento =
+        document.createElement(
+            "span"
+        );
+
+
+    elemento.className =
+        "forma-mini";
+
+
+    if(forma === "circulo"){
+
+        elemento.classList.add(
+            "forma-circulo"
+        );
+
+    }
+
+
+    if(forma === "cuadrado"){
+
+        elemento.classList.add(
+            "forma-cuadrado"
+        );
+
+    }
+
+
+    if(forma === "rectangulo"){
+
+        elemento.classList.add(
+            "forma-rectangulo"
+        );
+
+    }
+
+
+    if(forma === "ovalo"){
+
+        elemento.classList.add(
+            "forma-ovalo"
+        );
+
+    }
+
+
+    if(forma === "triangulo"){
+
+        elemento.classList.add(
+            "forma-triangulo"
+        );
+
+    }
+
+
+    if(forma === "rombo"){
+
+        elemento.classList.add(
+            "forma-rombo"
+        );
+
+    }
+
+
+    if(forma === "estrella"){
+
+        elemento.className =
+            "forma-estrella";
+
+        elemento.textContent =
+            "★";
+
+    }
+
+
+    if(forma === "corazon"){
+
+        elemento.className =
+            "forma-corazon";
+
+        elemento.textContent =
+            "♥";
+
+    }
+
+
+    if(forma === "pentagono"){
+
+        elemento.className =
+            "forma-pentagono";
+
+        elemento.textContent =
+            "⬟";
+
+    }
+
+
+    if(forma === "hexagono"){
+
+        elemento.className =
+            "forma-hexagono";
+
+        elemento.textContent =
+            "⬢";
+
+    }
+
+
+    if(forma === "trapezoide"){
+
+        elemento.className =
+            "forma-trapezoide";
+
+    }
+
+
+    if(forma === "octagono"){
+
+        elemento.className =
+            "forma-mini forma-octagono";
+
+    }
+
+
+    return elemento;
+
+}
+
+
+/* ==============================================================
+   BUSCAR FIGURA
+   ============================================================== */
+
+function BuscarFigura(clave){
+
+    return figuras.find(
+        function(figura){
+
+            return figura.clave === clave;
+
+        }
+    );
+
+}
+
+
+/* ==============================================================
+   BUSCAR COLOR
+   ============================================================== */
+
+function BuscarColor(clave){
+
+    return colores.find(
+        function(color){
+
+            return color.clave === clave;
+
+        }
+    );
+
+}
+
+
+/* ==============================================================
+   LIMPIAR SELECCIÓN
+   ============================================================== */
+
+function LimpiarSeleccion(){
+
+    document
+        .querySelectorAll(
+            ".opcion"
+        )
+        .forEach(
+            function(boton){
+
+                boton.classList.remove(
+                    "seleccionada"
+                );
+
+            }
+        );
+
+
+    document
+        .getElementById(
+            "textoFormaElegida"
+        )
+        .textContent =
+        "Ninguna";
+
+
+    document
+        .getElementById(
+            "textoColorElegido"
+        )
+        .textContent =
+        "Ninguno";
+
+
+    document
+        .getElementById(
+            "resultadoTexto"
+        )
+        .textContent =
+        "Elige una figura";
+
+
+    const imagenResultado =
+        document.getElementById(
+            "imagenColorResultado"
+        );
+
+    imagenResultado.removeAttribute(
+        "src"
+    );
+
+    imagenResultado.style.backgroundColor =
+        "transparent";
+
+
+    document
+        .getElementById(
+            "figuraSVG"
+        )
+        .innerHTML = "";
+
+}
+
+
+/* ==============================================================
+   ACTIVAR PASO
+   ============================================================== */
+
+function ActivarPaso(numero){
+
+    document
+        .querySelectorAll(
+            ".paso"
+        )
+        .forEach(
+            function(paso){
+
+                paso.classList.remove(
+                    "activo",
+                    "completo"
+                );
+
+            }
+        );
+
+
+    for(
+        let i = 1;
+        i < numero;
+        i++
+    ){
+
+        document
+            .getElementById(
+                "paso" + i
+            )
+            .classList
+            .add(
+                "completo"
+            );
+
+    }
+
+
+    document
+        .getElementById(
+            "paso" + numero
+        )
+        .classList
+        .add(
+            "activo"
+        );
+
+}
+
+
+/* ==============================================================
+   MOSTRAR INSTRUCCIÓN
+   ============================================================== */
+
+function MostrarInstruccion(texto){
+
+    document
+        .getElementById(
+            "instruccion"
+        )
+        .textContent =
+        texto;
+
+}
+
+
+/* ==============================================================
+   CONTINUAR
+   --------------------------------------------------------------
+   No existe un "último nivel".
+   Siempre genera otra receta aleatoria.
+   ============================================================== */
+
+function Continuar(){
+
+    document
+        .getElementById(
+            "modalExito"
+        )
+        .classList
+        .add(
+            "oculto"
+        );
+
+
+    NuevaReceta();
+
+
+    MostrarInstruccion(
+        "🎲 ¡Nueva receta! Observa la combinación y comienza por la FIGURA."
+    );
+
+
+    document
+        .getElementById(
+            "ayudaCentral"
+        )
+        .textContent =
+        "Paso 1: selecciona una figura.";
+
+}
+
+
+/* ==============================================================
+   CREAR ESTRELLAS DE CELEBRACIÓN
+   ============================================================== */
+
+function CrearEstrellas(){
+
+    for(
+        let i = 0;
+        i < 18;
+        i++
+    ){
+
+        const estrella =
+            document.createElement(
+                "div"
+            );
+
+
+        estrella.className =
+            "estrella";
+
+
+        estrella.textContent =
+            i % 2 === 0
+            ? "⭐"
+            : "✨";
+
+
+        estrella.style.left =
+            (15 + Math.random() * 70) +
+            "%";
+
+
+        estrella.style.top =
+            (55 + Math.random() * 30) +
+            "%";
+
+
+        document
+            .body
+            .appendChild(
+                estrella
+            );
+
+
+        setTimeout(
+            function(){
+
+                estrella.remove();
+
+            },
+            1900
+        );
+
+    }
+
+}
+
+
+/* ==============================================================
+   INICIALIZAR MENÚS
+   ============================================================== */
+
+ConstruirOpcionesFiguras();
+
+ConstruirOpcionesColores();
+
+
+/* ==============================================================
+   IMPORTANTE PARA LA PERSONALIZACIÓN DE SONIC
+   ==============================================================
+
+   IMAGEN DE FONDO:
+   ../Imágenes/FondoLaboratorioSonic.png
+
+   IMÁGENES DE COLORES:
+   ../Imágenes/Colores/SonicAzul.png
+   ../Imágenes/Colores/SonicRojo.png
+   ../Imágenes/Colores/SonicAmarillo.png
+   ../Imágenes/Colores/SonicVerde.png
+   ../Imágenes/Colores/SonicMorado.png
+   ../Imágenes/Colores/SonicRosa.png
+   ../Imágenes/Colores/SonicNaranja.png
+   ../Imágenes/Colores/SonicTurquesa.png
+   ../Imágenes/Colores/SonicCeleste.png
+   ../Imágenes/Colores/SonicBlanco.png
+   ../Imágenes/Colores/SonicNegro.png
+   ../Imágenes/Colores/SonicDorado.png
+
+   No es necesario modificar la lógica del juego.
+   Solamente reemplaza los archivos por tus PNG.
+
+   Puedes agregar más colores copiando un objeto dentro
+   de const colores.
+
+   Puedes agregar más canciones copiando un objeto dentro
+   de const canciones.
+   ============================================================== */
+
+
+/* ==============================================================
+   AJUSTAR TAMAÑO DEL PERSONAJE SEGÚN LA FIGURA
+   --------------------------------------------------------------
+   No corta la imagen.
+   Solamente cambia el área disponible para que cada PNG se vea
+   completo y centrado según la forma.
+   ============================================================== */
+
+function AjustarTamanoPersonaje(forma){
+
+    const imagen =
+        document.getElementById("imagenColorResultado");
+
+    if(!imagen){
+        return;
+    }
+
+    /*
+       Cada figura tiene un espacio interior diferente.
+       Por eso el personaje NO usa un tamaño único.
+       Los tamaños fueron ajustados para aprovechar mejor el
+       centro de cada silueta sin sacar el PNG fuera de ella.
+    */
+    const tamanos = {
+
+        circulo:"94px",
+
+        cuadrado:"116px",
+
+        triangulo:"70px",
+
+        rectangulo:"122px",
+
+        ovalo:"104px",
+
+        rombo:"88px",
+
+        estrella:"88px",
+
+        corazon:"100px",
+
+        pentagono:"104px",
+
+        hexagono:"108px",
+
+        trapezoide:"108px",
+
+        octagono:"108px"
+
+    };
+
+    const tamano =
+        tamanos[forma] || "82px";
+
+    imagen.style.setProperty(
+        "--tamano-personaje",
+        tamano
+    );
+
+    /* Guardamos también el tamaño en el contenedor principal.
+       Así los resultados de celebración pueden reutilizar el
+       mismo tamaño de la figura que acabamos de seleccionar. */
+    const zonaResultado =
+        imagen.closest(".resultado-combinado") ||
+        imagen.closest(".creacion-visual");
+
+    if(zonaResultado){
+        zonaResultado.style.setProperty(
+            "--tamano-personaje",
+            tamano
+        );
+    }
+}
+
+</script>
+
+<!-- ============================================================
+     FIN DEL JAVASCRIPT
+     ============================================================ -->
+
+</body>
+</html>

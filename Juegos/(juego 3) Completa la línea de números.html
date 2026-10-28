@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>¡Completa los números!</title>
+
+<style>
+/* Colores principales del juego */
+:root {
+  --blue: #2563eb;
+  --navy: #172554;
+  --green: #15803d;
+  --orange: #f59e0b;
+  --celeste: #036e9d;
+}
+
+/* Incluye el borde y el relleno en las dimensiones */
+* { box-sizing: border-box; }
+
+/* Diseño general de la página */
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #65ff5f;
+  background: linear-gradient(135deg, #b5f61d, #2df51b);
+}
+
+/* Contenedor principal del juego */
+.game {
+  width: min(950px, 100%);
+  background: rgb(146, 255, 45);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 18px 55px #1546ccc0;
+}
+
+/* Encabezado del juego */
+header {
+  background: linear-gradient(120deg, #2f65f8, #38ca44);
+  color: white;
+  padding: 24px clamp(18px, 4vw, 32px);
+  text-align: center;
+}
+
+/* Etiqueta superior */
+.tag {
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+/* Título principal */
+h1 {
+  margin: 8px 0;
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
+}
+
+/* Texto del encabezado */
+header p {
+  margin: 0;
+  color: #dbeafe;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Espaciado del contenido */
+main { padding: clamp(16px, 4vw, 28px); }
+
+/* Indicadores de progreso */
+.status {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+/* Cada indicador */
+.stat {
+  padding: 11px 5px;
+  text-align: center;
+  background: #3af5a4;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+/* Texto pequeño de los indicadores */
+.stat span {
+  display: block;
+  color: #64748b;
+  font-size: .8rem;
+}
+
+/* Números de los indicadores */
+.stat strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--navy);
+  font-size: 1.3rem;
+}
+
+/* Instrucciones del juego */
+.instructions {
+  background: var(--celeste);
+  border: 1px solid #bfdbfe;
+  border-radius: 15px;
+  padding: 14px;
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+/* Títulos de cada sección */
+.section-title {
+  text-align: center;
+  font-weight: 800;
+  color: #334155;
+  margin: 0 0 13px;
+}
+
+/* Panel de la secuencia numérica */
+.sequence-panel {
+  background: #fbf40e;
+  border: 2px dashed #6a8700;
+  border-radius: 18px;
+  padding: 18px 12px;
+  margin-bottom: 22px;
+}
+
+/* Distribución de números y respuestas */
+.sequence, .answers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Casillas de la secuencia */
+.slot {
+  width: clamp(48px, 7.4vw, 72px);
+  height: clamp(52px, 8vw, 72px);
+  border: 2px solid #bfdbfe;
+  border-radius: 13px;
+  background: #ef6565;
+  color: #1d4ed8;
+  font-size: clamp(1.05rem, 2.7vw, 1.5rem);
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+}
+
+/* Casillas que todavía están vacías */
+.slot.empty {
+  border: 2px dashed var(--orange);
+  background: #f4a7b9;
+  color: #0db01e;
+  cursor: pointer;
+  box-shadow: 0 3px #fde68a;
+}
+
+/* Resalta la casilla que se puede completar */
+.slot.empty.selected-target {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+/* Apariencia de las respuestas correctas */
+.slot.filled {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+  box-shadow: 0 3px #bbf7d0;
+}
+
+/* Panel de las respuestas disponibles */
+.answers-panel {
+  background: #ffff7f;
+  border: 1px solid #b8b500;
+  border-radius: 18px;
+  padding: 18px 12px;
+}
+
+/* Botones con los números para elegir */
+.answer {
+  min-width: 65px;
+  min-height: 52px;
+  padding: 10px 16px;
+  border: 2px solid #4c8e00;
+  border-radius: 12px;
+  background: #a5ef43;
+  color: #08064d;
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px #346900;
+}
+
+/* Efecto al pasar el cursor */
+.answer:hover {
+  transform: translateY(-2px);
+  background: #487100;
+}
+
+/* Resalta el número seleccionado */
+.answer.selected {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+  background: #fef3c7;
+}
+
+/* Mensajes de respuesta */
+.feedback {
+  min-height: 52px;
+  padding: 15px 5px 2px;
+  text-align: center;
+  font-weight: 750;
+  line-height: 1.45;
+  color: #475569;
+}
+
+/* Colores de los mensajes */
+.feedback.good { color: var(--green); }
+.feedback.try { color: #b45309; }
+
+/* Nota al pie del juego */
+.note {
+  text-align: center;
+  color: #039d9f;
+  font-size: .83rem;
+  margin: 17px 0 0;
+}
+
+/* Fondo oscuro de las ventanas emergentes */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 255, 30, 0.346);
+}
+
+/* Oculta una ventana emergente */
+.overlay.hidden { display: none; }
+
+/* Caja de las ventanas emergentes */
+.dialog {
+  width: min(480px, 100%);
+  padding: 30px 24px;
+  text-align: center;
+  background: rgb(0, 255, 136);
+  border-radius: 24px;
+  box-shadow: 0 20px 70px rgba(181, 27, 27, 0.695);
+  animation: pop .25s ease-out;
+}
+
+/* Emoji de las ventanas */
+.dialog .emoji {
+  font-size: 3.5rem;
+  margin-bottom: 8px;
+}
+
+/* Título de las ventanas */
+.dialog h2 {
+  color: #930182;
+  margin: 0 0 10px;
+  font-size: clamp(1.7rem, 5vw, 2.2rem);
+}
+
+/* Texto de las ventanas */
+.dialog p {
+  color: #61004b;
+  line-height: 1.6;
+  margin: 0 0 22px;
+}
+
+/* Estilos generales de los botones */
+.btn {
+  padding: 14px 22px;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Botón principal */
+.primary {
+  background: var(--blue);
+  color: white;
+  box-shadow: 0 4px #4372f4;
+}
+
+/* Efecto del botón principal */
+.primary:hover {
+  background: #14b521;
+  transform: translateY(-1px);
+}
+
+/* Animación de aparición */
+@keyframes pop {
+  from { opacity: 0; transform: scale(.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Adaptaciones para teléfonos */
+@media (max-width: 500px) {
+  body { padding: 8px; }
+  .game { border-radius: 18px; }
+  .status { gap: 6px; }
+  .stat { padding: 9px 3px; }
+  .stat span { font-size: .72rem; }
+  .stat strong { font-size: 1.1rem; }
+  .sequence { gap: 6px; }
+
+  .slot {
+    width: clamp(39px, 8.5vw, 52px);
+    height: 48px;
+    border-radius: 9px;
+  }
+
+  .answer {
+    min-width: 53px;
+    padding: 10px 12px;
+  }
+}
+
+/* Reduce animaciones si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Elemento de audio que reproduce las canciones -->
+<!-- Los nombres de los archivos se configuran en JavaScript -->
+<audio id="backgroundMusic" preload="auto"></audio>
+
+<!-- Contenedor principal del juego -->
+<div class="game">
+
+  <header>
+    <h1>🔢 Completa los números</h1>
+    <p>Observa la secuencia, descubre qué números faltan y colócalos en los espacios vacíos.</p>
+  </header>
+
+  <main>
+    <!-- Muestra el progreso y los retos completados -->
+    <div class="status">
+      <div class="stat">
+        <span>Espacios completados</span>
+        <strong id="progress">0 / 4</strong>
+      </div>
+
+      <div class="stat">
+        <span>Retos completados</span>
+        <strong id="rounds">0</strong>
+      </div>
+    </div>
+
+    <!-- Instrucciones para el jugador -->
+    <div class="instructions">
+      <strong>¿Cómo jugar?</strong><br>
+      1. Mira los números de arriba y descubre cuáles faltan.<br>
+      2. Pulsa uno de los números de abajo.<br>
+      3. Pulsa el espacio vacío donde crees que debe ir.
+    </div>
+
+    <!-- Aquí se muestra la secuencia numérica -->
+    <section class="sequence-panel">
+      <p class="section-title">Completa la secuencia</p>
+      <div class="sequence" id="sequence"></div>
+    </section>
+
+    <!-- Aquí aparecen los números que se pueden elegir -->
+    <section class="answers-panel">
+      <p class="section-title">Selecciona un número</p>
+      <div class="answers" id="answers"></div>
+    </section>
+
+    <!-- Mensajes para orientar al jugador -->
+    <div class="feedback" id="feedback" role="status" aria-live="polite">
+      ¡Prepárate para completar la secuencia!
+    </div>
+
+    <p class="note">
+      Cada reto usa 10 números consecutivos, del 1 al 50. No hay cronómetro.
+    </p>
+  </main>
+</div>
+
+<!-- Ventana inicial que aparece al entrar al juego -->
+<div class="overlay" id="welcomeScreen">
+  <div class="dialog">
+    <div class="emoji">🔢🌟</div>
+    <h2>¡Bienvenido al juego!</h2>
+    <p>
+      ¿Estás listo para encontrar los números que faltan?<br>
+      ¡Pulsa iniciar y diviértete aprendiendo!
+    </p>
+    <button class="btn primary" id="startGame">
+      ▶ Iniciar juego
+    </button>
+  </div>
+</div>
+
+<!-- Ventana que aparece cuando se completa el reto -->
+<div class="overlay hidden" id="winScreen">
+  <div class="dialog">
+    <div class="emoji">🏆🎉</div>
+    <h2>¡Ganaste!</h2>
+    <p>
+      ¡Excelente trabajo! Completaste todos los espacios correctamente.<br>
+      ¿Quieres jugar otro reto?
+    </p>
+    <button class="btn primary" id="continueGame">
+      ⭐ Seguir jugando
+    </button>
+  </div>
+</div>
+
+<script>
+
+/* Función abreviada para buscar elementos por su ID */
+const $ = id => document.getElementById(id);
+
+/* Variables que guardan el estado del juego */
+let fullSequence = [];
+let missingNumbers = [];
+let answerOrder = [];
+let selectedNumber = null;
+let completedCount = 0;
+let completedRounds = 0;
+let totalMissing = 0;
+let roundFinished = false;
+
+// ======================================
+// 1. CONFIGURACIÓN DE LA MÚSICA
+// ======================================
+
+// Coloca aquí las rutas de tus canciones MP3.
+// Los nombres y las carpetas deben coincidir con tus archivos.
+
+const canciones = [
+  "../Música/Dreams Of An Absolution (relax).mp3",
+  "../Música/Chao Garden (relax).mp3",
+  "../Música/Escape From The City (relax).mp3",
+  "../Música/Fist Bump (relax).mp3",
+  "../Música/Friends (relax).mp3",
+  "../Música/Green Hill Zone (relax).mp3",
+  "../Música/Open Your Heart (relax).mp3",
+  "../Música/Reach For The Stars (relax).mp3",
+  "../Música/Fishing Vibes (relax).mp3"
+];
+
+// Guarda el índice de la última canción elegida.
+let ultimaCancion = -1;
+
+// Escoge una canción al azar y evita repetir la última.
+function elegirCancion() {
+  if (canciones.length === 0) return "";
+
+  if (canciones.length === 1) {
+    ultimaCancion = 0;
+    return canciones[0];
+  }
+
+  let indice;
+
+  do {
+    indice = Math.floor(Math.random() * canciones.length);
+  } while (indice === ultimaCancion);
+
+  ultimaCancion = indice;
+  return canciones[indice];
+}
+
+// Inicia la música después de pulsar el botón de inicio.
+// Si falla, no aparece ningún mensaje en pantalla.
+async function startMusic() {
+  const music = $("backgroundMusic");
+
+  if (!canciones.length) return;
+
+  music.src = elegirCancion();
+  music.loop = false;
+  music.volume = 0.35;
+
+  try {
+    await music.play();
+  } catch (error) {
+    // El juego continúa aunque la música no se reproduzca.
+    console.error("No se pudo reproducir la música.", error);
+  }
+}
+
+// Cuando termina una canción, selecciona otra al azar.
+$("backgroundMusic").addEventListener("ended", async () => {
+  const music = $("backgroundMusic");
+
+  if (!canciones.length) return;
+
+  music.src = elegirCancion();
+
+  try {
+    await music.play();
+  } catch (error) {
+    // Si la música falla, el juego sigue funcionando.
+  }
+});
+
+// ======================================
+// 2. CREAR UN NUEVO RETO
+// ======================================
+
+function newRound() {
+  // Elige un número inicial entre 1 y 41.
+  const startNumber = Math.floor(Math.random() * 41) + 1;
+
+  // Crea una secuencia de diez números consecutivos.
+  fullSequence = Array.from(
+    { length: 10 },
+    (_, i) => startNumber + i
+  );
+
+  // Decide al azar cuántos números estarán ocultos: de 3 a 5.
+  const amountMissing = Math.floor(Math.random() * 3) + 3;
+
+  // Selecciona posiciones interiores para ocultar.
+  // El primer y el último número siempre se muestran.
+  const positions = shuffle([1, 2, 3, 4, 5, 6, 7, 8]);
+
+  missingNumbers = positions
+    .slice(0, amountMissing)
+    .map(index => ({
+      index,
+      value: fullSequence[index],
+      filled: false
+    }));
+
+  // Ordena las posiciones ocultas de menor a mayor.
+  missingNumbers.sort((a, b) => a.index - b.index);
+
+  // Mezcla las opciones disponibles para el jugador.
+  answerOrder = shuffle(
+    missingNumbers.map(item => item.value)
+  );
+
+  // Reinicia las variables para el nuevo reto.
+  selectedNumber = null;
+  completedCount = 0;
+  totalMissing = amountMissing;
+  roundFinished = false;
+
+  // Actualiza el indicador de progreso.
+  $("progress").textContent =
+    `0 / ${totalMissing}`;
+
+  // Muestra las instrucciones del reto.
+  $("feedback").textContent =
+    "Observa la secuencia y descubre qué números faltan.";
+
+  $("feedback").className = "feedback";
+
+  // Dibuja la secuencia y las opciones.
+  renderSequence();
+  renderAnswers();
+}
+
+// Mezcla al azar los elementos de una lista.
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+
+    [array[i], array[j]] =
+      [array[j], array[i]];
+  }
+
+  return array;
+}
+
+// Busca si una posición de la secuencia está oculta.
+function getMissingItem(index) {
+  return missingNumbers.find(
+    item => item.index === index
+  );
+}
+
+// ======================================
+// 3. MOSTRAR LA SECUENCIA
+// ======================================
+
+function renderSequence() {
+  const sequenceEl = $("sequence");
+
+  // Limpia la secuencia anterior antes de dibujar la nueva.
+  sequenceEl.innerHTML = "";
+
+  // Recorre todos los números de la secuencia.
+  fullSequence.forEach((number, index) => {
+    const slot = document.createElement("button");
+
+    slot.type = "button";
+    slot.className = "slot";
+
+    // Comprueba si el número de esta posición estaba oculto.
+    const item = getMissingItem(index);
+
+    if (!item) {
+      // Si no estaba oculto, muestra el número normalmente.
+      slot.textContent = number;
+      slot.disabled = true;
+
+    } else if (item.filled) {
+      // Si ya fue respondido correctamente, muestra el número.
+      slot.textContent = number;
+      slot.classList.add("filled");
+      slot.disabled = true;
+
+    } else {
+      // Si todavía está vacío, permite pulsarlo.
+      slot.textContent = "";
+      slot.classList.add("empty");
+      slot.setAttribute("aria-label", "Espacio vacío");
+
+      // Resalta las casillas cuando hay un número seleccionado.
+      if (selectedNumber !== null) {
+        slot.classList.add("selected-target");
+      }
+
+      // Al pulsar la casilla, comprueba la respuesta.
+      slot.addEventListener("click", () => {
+        placeNumber(index);
+      });
+    }
+
+    // Añade la casilla a la página.
+    sequenceEl.appendChild(slot);
+  });
+}
+
+// ======================================
+// 4. MOSTRAR LAS OPCIONES
+// ======================================
+
+function renderAnswers() {
+  const answersEl = $("answers");
+
+  // Elimina los botones anteriores antes de actualizarlos.
+  answersEl.innerHTML = "";
+
+  // Conserva el orden de las opciones y quita las ya utilizadas.
+  const choices = answerOrder.filter(number => {
+    const item = missingNumbers.find(
+      missing => missing.value === number
+    );
+
+    return item && !item.filled;
+  });
+
+  // Crea un botón para cada número disponible.
+  choices.forEach(number => {
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "answer";
+    button.textContent = number;
+
+    // Resalta el número elegido.
+    if (selectedNumber === number) {
+      button.classList.add("selected");
+    }
+
+    // Guarda la selección cuando el jugador pulsa un número.
+    button.addEventListener("click", () => {
+      if (roundFinished) return;
+
+      selectedNumber = number;
+
+      $("feedback").textContent =
+        "Ahora pulsa el espacio donde crees que va ese número.";
+
+      $("feedback").className = "feedback";
+
+      // Actualiza las opciones y las casillas.
+      renderAnswers();
+      renderSequence();
+    });
+
+    // Añade el botón a la sección de respuestas.
+    answersEl.appendChild(button);
+  });
+}
+
+// ======================================
+// 5. COMPROBAR LA RESPUESTA
+// ======================================
+
+function placeNumber(index) {
+  // Exige seleccionar un número antes de pulsar una casilla.
+  if (selectedNumber === null || roundFinished) {
+    $("feedback").textContent =
+      "Primero selecciona uno de los números de abajo.";
+
+    $("feedback").className = "feedback try";
+    return;
+  }
+
+  // Obtiene el número que corresponde a esa posición.
+  const item = getMissingItem(index);
+
+  // No permite cambiar una casilla ya completada.
+  if (!item || item.filled) return;
+
+  if (item.value === selectedNumber) {
+    // La respuesta es correcta.
+    item.filled = true;
+    completedCount++;
+    selectedNumber = null;
+
+    // Actualiza el progreso.
+    $("progress").textContent =
+      `${completedCount} / ${totalMissing}`;
+
+    // Muestra un mensaje positivo.
+    $("feedback").textContent =
+      "¡Correcto! Sigue completando los espacios. 🌟";
+
+    $("feedback").className = "feedback good";
+
+    // Actualiza la secuencia y las opciones.
+    renderSequence();
+    renderAnswers();
+
+    // Comprueba si se completaron todos los espacios.
+    if (completedCount === totalMissing) {
+      roundFinished = true;
+      completedRounds++;
+
+      // Actualiza el total de retos ganados.
+      $("rounds").textContent = completedRounds;
+
+      $("feedback").textContent =
+        "¡Terminaste el reto! 🎉";
+
+      // Muestra la ventana de victoria.
+      $("winScreen").classList.remove("hidden");
+    }
+
+  } else {
+    // La respuesta es incorrecta.
+    $("feedback").textContent =
+      "¡Inténtalo otra vez! Observa los números que están antes y después del espacio.";
+
+    $("feedback").className = "feedback try";
+
+    // Quita la selección para volver a intentarlo.
+    selectedNumber = null;
+
+    // Actualiza la pantalla sin cambiar el orden de opciones.
+    renderAnswers();
+    renderSequence();
+  }
+}
+
+// ======================================
+// 6. BOTÓN PARA INICIAR
+// ======================================
+
+$("startGame").addEventListener("click", () => {
+  // Oculta la ventana inicial.
+  $("welcomeScreen").classList.add("hidden");
+
+  // Prepara el primer reto.
+  newRound();
+
+  // Intenta iniciar la música después del clic.
+  startMusic();
+});
+
+// ======================================
+// 7. BOTÓN PARA SEGUIR JUGANDO
+// ======================================
+
+$("continueGame").addEventListener("click", () => {
+  // Oculta la ventana de victoria.
+  $("winScreen").classList.add("hidden");
+
+  // Prepara otra secuencia.
+  newRound();
+});
+
+// Prepara el primer reto al cargar el archivo.
+newRound();
+
+</script>
+</body>
+</html>
